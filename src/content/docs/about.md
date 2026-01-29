@@ -1,0 +1,25 @@
+---
+title: indigo のプロフィール
+description: フリーランスエンジニア indigo のプロフィール
+---
+
+愛知県を拠点に活動するフリーランスエンジニアです。<br />
+モダンWebアプリ開発と良いテストに興味があります。<br />
+QAエンジニア：5割、フロントエンド：3割、バックエンド開発：2割くらいの人です。<br />
+組み込み系からWeb系へ移行しました。<br />
+
+## 開発環境 (Infrastructure)
+
+### メインシステム
+- **PC**: GALLERIA RM7C-R46T (Windows 11 Pro / WSL2 Ubuntu 24.04.3)
+- **サブPC**: ASUS VivoBook S510U (Ubuntu 24.04.3)
+
+### 周辺機器・ネットワーク
+- **Mouse**: ロジクール MX Master 3S
+- **Keyboard**: ロジクール MX Mechanical
+- **Router**: バッファロー WSR-5400XE6
+- **Storage**: NAS LinkStation LS210D
+
+## ライフスタイル
+おじうさぎの**クッキー**と一緒に暮らしています。<br />
+趣味はピアノ。キーを叩くことが好き。ショパンとかモーツァルトとかクラシックが好きです。<br />

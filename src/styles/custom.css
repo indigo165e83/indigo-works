@@ -1,0 +1,11 @@
+:root {
+  /* サイトのメインアクセントカラーをご指定の色に設定 */
+  --sl-color-accent-low: #165e83;
+  --sl-color-accent: #3d8fb5;
+  --sl-color-accent-high: #7dcaf1;
+}
+
+/* 特定の見出しだけに色を付けたい場合 */
+h1, h2, h3 {
+  color: #3d8fb5 !important;
+}

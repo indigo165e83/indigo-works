@@ -1,40 +1,50 @@
 ---
-title: Welcome to Starlight
-description: Get started building your docs site with Starlight.
-template: splash # Remove or comment out this line to display the site sidebar on this page.
+title: Indigo Works
+description: フリーランスエンジニア indigo のポートフォリオと技術ドキュメント
+template: splash
 hero:
-  tagline: Congrats on setting up a new Starlight project!
+  tagline: アイデアを形にする、エンジニアリングのHUB
   image:
     file: ../../assets/houston.webp
   actions:
-    - text: Example Guide
-      link: /guides/example/
+    - text: Profile
+      link: /about/
       icon: right-arrow
-    - text: Read the Starlight docs
-      link: https://starlight.astro.build
+      variant: primary
+    - text: GitHub を確認する
+      link: https://github.com/indigo165e83/indigo-works
       icon: external
       variant: minimal
+      attrs:
+        target: _blank
+        rel: noopener noreferrer	  
 ---
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-## Next steps
+## 公開中のプロジェクト
 
 <CardGrid stagger>
-	<Card title="Update content" icon="pencil">
-		Edit `src/content/docs/index.mdx` to see this page change.
-	</Card>
-	<Card title="Change page layout" icon="document">
-		Delete `template: splash` in `src/content/docs/index.mdx` to display a
-		sidebar on this page.
-	</Card>
-	<Card title="Add new content" icon="add-document">
-		Add Markdown or MDX files to `src/content/docs` to create new pages.
-	</Card>
-	<Card title="Configure your site" icon="setting">
-		Edit your `sidebar` and other config in `astro.config.mjs`.
-	</Card>
-	<Card title="Read the docs" icon="open-book">
-		Learn more in [the Starlight Docs](https://starlight.astro.build/).
-	</Card>
+  <Card title="Free Images" icon="pencil">
+    AIで生成した画像をストックするフリーのサイト<br />
+    <a href="https://free-images.indigo165e83.com" target="_blank" rel="noopener noreferrer">サイトを見る</a>
+  </Card>
+  <Card title="4Testing" icon="setting">
+    開発者のためのテストツール群をまとめたサイト。
+    <br	/>準備中
+  </Card>
+  <Card title="NextAuth.js Example" icon="pencil">
+    NextAuth.jsでの認証まわりの実験サイトです。<br />
+    <a href="https://next-auth-example.indigo165e83.com" target="_blank" rel="noopener noreferrer">サイトを見る</a>
+  </Card>
+  <Card title="Nextjs dashboard" icon="pencil">
+    下記の公式サイトの写経です。<br />
+    Start building with Next.js： https://nextjs.org/learn<br />
+    次の機能を備えた財務ダッシュボード<br />
+    ・公開ホームページ<br />
+    ・ログインページ<br />
+    ・認証によって保護されているダッシュボードページ<br />
+    ・ユーザーが請求書を追加、編集、削除できる機能<br />
+    <a href="https://nextjs-dashboard.indigo165e83.com/" target="_blank" rel="noopener noreferrer">サイトを見る</a>
+  </Card>
 </CardGrid>
