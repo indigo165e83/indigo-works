@@ -8,6 +8,16 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'Indigo Works',
+			head: [
+        {
+          tag: 'script',
+          attrs: {
+            async: true,
+            src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6897468555074184',
+            crossorigin: 'anonymous',
+          },
+        },
+      ],			
 			customCss: ['./src/styles/custom.css'],	//customCss のパスを追加
 			social: [
 				{ 
