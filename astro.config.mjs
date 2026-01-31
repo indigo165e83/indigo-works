@@ -30,20 +30,19 @@ export default defineConfig({
 					label: 'Overview',
 					items: [
 						// Each item here is one entry in the navigation menu.
-						{ label: 'Profile', slug: 'about' },
+						{ label: 'About', slug: 'about' },
+						{ label: 'Works', slug: 'works' },
+					],
+				},
+				{
+					label: 'お問い合わせ Contact',
+					items: [
 						{ label: 'プライバシーポリシー', slug: 'privacy' },
 						{ 
 							label: 'お問い合わせ', 
 							link: 'https://docs.google.com/forms/d/e/1FAIpQLSfWK-b7UUl3oYis1MyrF7_51YlSi-NXmJ3izsFViIUpD_mqfg/viewform?usp=header',
 							attrs: { target: '_blank', rel: 'noopener' }
 						},
-					],
-				},
-				{
-					label: 'Works (Subdomains)',
-					items: [
-						{ label: 'Free Images', link: 'https://free-images.indigo165e83.com' },
-						{ label: '4Testing', link: 'https://4testing.indigo165e83.com' },
 					],					
 				},
 			],
