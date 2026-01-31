@@ -27,12 +27,17 @@ export default defineConfig({
 				 }],
 			sidebar: [
 				{
-					label: 'Overview',
-					items: [
-						// Each item here is one entry in the navigation menu.
-						{ label: 'About', slug: 'about' },
-						{ label: 'Works', slug: 'works' },
-					],
+					label: 'About',
+					slug: 'about'
+				},
+				{
+					label: 'Works',
+					slug: 'works'
+				},
+				{
+					label: 'Blog',
+					// Blogフォルダの中身を、この「Blog」グループの直下にすべて表示する設定
+					autogenerate: { directory: 'blog' },
 				},
 				{
 					label: 'お問い合わせ Contact',
