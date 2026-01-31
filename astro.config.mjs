@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import starlightBlog from 'starlight-blog';
 
 // https://astro.build/config
 export default defineConfig({
@@ -8,6 +9,19 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'Indigo Works',
+			plugins: [
+        // ここにブログの設定を記述します
+        starlightBlog({
+          title: 'Blog',
+          recentPostCount: 5,
+					authors: {
+							indigo: {
+								name: 'Indigo',
+								url: 'https://indigo165e83.com',
+							}
+						}
+        }),
+      ],			
 			head: [
         {
           tag: 'script',
@@ -28,21 +42,17 @@ export default defineConfig({
 			sidebar: [
 				{
 					label: 'About',
-					slug: 'about'
+					link: '/about/',
 				},
 				{
 					label: 'Works',
-					slug: 'works'
+					link: '/works/',
 				},
-				{
-					label: 'Blog',
-					// Blogフォルダの中身を、この「Blog」グループの直下にすべて表示する設定
-					autogenerate: { directory: 'blog' },
-				},
+					// label: 'Blog'は不要
 				{
 					label: 'お問い合わせ Contact',
 					items: [
-						{ label: 'プライバシーポリシー', slug: 'privacy' },
+						{ label: 'プライバシーポリシー', link: '/privacy' },
 						{ 
 							label: 'お問い合わせ', 
 							link: 'https://docs.google.com/forms/d/e/1FAIpQLSfWK-b7UUl3oYis1MyrF7_51YlSi-NXmJ3izsFViIUpD_mqfg/viewform?usp=header',
