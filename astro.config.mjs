@@ -9,6 +9,7 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'Indigo Works',
+			pagination: false,
 			plugins: [
         // ここにブログの設定を記述します
         starlightBlog({
@@ -45,10 +46,13 @@ export default defineConfig({
 					link: '/about/',
 				},
 				{
-					label: 'Works',
+					label: 'My Works',
 					link: '/works/',
 				},
-					// label: 'Blog'は不要
+				{
+					label: 'Blog',
+					link: '/blog/',
+				},
 				{
 					label: 'お問い合わせ Contact',
 					items: [
