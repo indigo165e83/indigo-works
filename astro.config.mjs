@@ -13,13 +13,13 @@ export default defineConfig({
         // ここにブログの設定を記述します
         starlightBlog({
           title: 'Blog',
-          recentPostCount: 5,
+          recentPostCount: 10,
 					authors: {
-							indigo: {
-								name: 'Indigo',
-								url: 'https://indigo165e83.com',
-							}
+						indigo: {
+							name: 'Indigo',
+							url: 'https://indigo165e83.com',
 						}
+					},
         }),
       ],			
 			head: [
