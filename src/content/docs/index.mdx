@@ -6,45 +6,69 @@ hero:
   tagline: アイデアを形にする、エンジニアリングのHUB
   image:
     file: ../../assets/cookie-01.webp
-  actions:
-    - text: About
-      link: /about/
-      icon: right-arrow
+actions:
+    - text: Tech Blog
+      link: /blog/
+      icon: document
       variant: primary
+    - text: My Works
+      link: /works/
+      icon: rocket
+      variant: secondary
     - text: GitHub
       link: https://github.com/indigo165e83?tab=repositories
       icon: external
       variant: minimal
       attrs:
         target: _blank
-        rel: noopener noreferrer	  
+        rel: noopener noreferrer
 ---
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-## My Works
+## Highlights
 
 <CardGrid stagger>
   <Card title="Free Images" icon="seti:image">
-    AIで生成した画像をストックするフリーのサイト<br />
+    **AI画像素材ストックサービス**<br />
+    商用利用も可能なAI生成画像を無料で提供するWebサービス。<br />
+    プロンプトも公開中。<br />
     <a href="https://free-images.indigo165e83.com" target="_blank" rel="noopener noreferrer">サイトを見る</a>
   </Card>
+  
+  <Card title="Tech Blog" icon="open-book">
+    **開発技術ログ**<br />
+    Next.js, Astro, Vercel などのモダンウェブ技術に関する知見や、開発中のトラブルシューティングを発信。<br />
+    <a href="/blog/">ブログを読む</a>
+  </Card>
+
   <Card title="4Testing" icon="setting">
-    開発者のためのテストツール群をまとめたサイト。<br />
+    **開発者向けユーティリティ**<br />
+    開発現場で必要となるテスト用データ生成ツールなどをまとめたユーティリティサイト。<br />
     <a href="https://4testing.indigo165e83.com" target="_blank" rel="noopener noreferrer">サイトを見る</a>
   </Card>
+
+  <Card title="About" icon="star">
+    **プロフィール**<br />
+    名古屋在住のフリーランスエンジニア。経歴、スキルセット、使用デバイスなど。<br />
+    <a href="/about/">詳細を見る</a>
+  </Card>
+</CardGrid>
+
+{/* :::caution[審査対策]
+以下の「実験的サイト」「写経プロジェクト」は、Google AdSense審査において
+「有用性の低いコンテンツ」と判定されるリスクが高いため、コメントアウトして非表示にしています。
+審査合格後に、必要であれば復活させてください。
+:::
+
+<CardGrid>
   <Card title="NextAuth.js Example" icon="pencil">
     NextAuth.jsでの認証まわりの実験サイトです。<br />
     <a href="https://next-auth-example.indigo165e83.com" target="_blank" rel="noopener noreferrer">サイトを見る</a>
   </Card>
-  <Card title="Nextjs dashboard" icon="pencil">
-    下記の公式サイトの写経です。<br />
-    Start building with Next.js： https://nextjs.org/learn<br />
-    次の機能を備えた財務ダッシュボード<br />
-    ・公開ホームページ<br />
-    ・ログインページ<br />
-    ・認証によって保護されているダッシュボードページ<br />
-    ・ユーザーが請求書を追加、編集、削除できる機能<br />
+  <Card title="Nextjs Dashboard" icon="pencil">
+    Next.js公式サイトのチュートリアル成果物。<br />
     <a href="https://nextjs-dashboard.indigo165e83.com/" target="_blank" rel="noopener noreferrer">サイトを見る</a>
   </Card>
 </CardGrid>
+*/}
