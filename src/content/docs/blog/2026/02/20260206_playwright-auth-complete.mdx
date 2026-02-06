@@ -1,0 +1,127 @@
+---
+title: "Playwright × NextAuth v5：ログインのテストを自動化する方法"
+date: 2026-02-06
+slug: blog/20260206_playwright-auth-complete
+authors: [indigo]
+tags: [Playwright, NextAuth, Testing, Troubleshooting]
+featured: true
+draft: false
+
+---
+
+Next.js + NextAuth (v5) で構築された「Free Images」というサービスに E2E テスト（Playwright）を導入しました。
+
+初期段階では「Googleログインしかないから、テストが難しいな」くらいに考えていたのですが、実際は**認証基盤のアーキテクチャ変更**にまで発展する大工事となりました。
+
+この記事では、直面したエラーとその解決策、そして最終的に完成した「テスト用裏口実装」のコードを共有します。
+
+{/* excerpt */}
+
+## 直面した2つの壁
+
+### 1. Google認証の壁
+Playwright で Google ログイン画面を操作しようとすると、Bot検知や二要素認証（2FA）に阻まれます。
+CI/CD で安定して回すためには、外部プロバイダ（Google）に依存しないログイン方法が必要でした。
+
+### 2. NextAuth の「DBセッション」の制約
+「じゃあ、テスト用にメール/パスワード認証（Credentials）を追加しよう」と考えましたが、NextAuth には以下の制約がありました。
+
+> **"Credentials 認証を使うなら、DBセッション（Adapter）は使えない。JWT を使いなさい。"**
+
+これにより、既存のデータベースセッション方式を捨て、JWT（JSON Web Token）方式へ移行する決断を迫られました。
+
+---
+
+## 解決策：テスト用「裏口」の実装
+
+最終的に実装した `auth.ts` がこちらです。
+ポイントは、**本番環境以外（開発・テスト）でのみ有効になる Credentials プロバイダー** を追加したことです。
+
+```typescript
+// auth.ts (完成版)
+import NextAuth from "next-auth"
+import Google from "next-auth/providers/google"
+import Credentials from "next-auth/providers/credentials"
+import { PrismaAdapter } from "@auth/prisma-adapter"
+import { prisma } from "@/lib/prisma"
+
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  adapter: PrismaAdapter(prisma),
+  
+  // Credentialsを使うために必須の設定
+  session: { strategy: "jwt" },
+
+  providers: [
+    Google({
+      clientId: process.env.AUTH_GOOGLE_ID,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET,
+    }),
+    
+    // ▼ テスト用裏口プロバイダー
+    Credentials({
+      id: "test-login",
+      name: "Test Login",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      authorize: async (credentials) => {
+        // 【重要】本番環境(production)でのみ無効化する
+        // ※ ここを "if (NODE_ENV !== 'test')" にすると、
+        // npm run dev (development) で動かした時にログインできずハマります！
+        if (process.env.NODE_ENV === "production") {
+          return null;
+        }
+
+        // 特定のアカウントのみ管理者として許可
+        if (
+          credentials.email === "admin@example.com" && 
+          credentials.password === "test-password"
+        ) {
+          return {
+            id: "test-admin-id",
+            role: "ADMIN", // ここで権限付与
+            email: "admin@example.com",
+          }
+        }
+        return null;
+      },
+    }),
+  ],
+  // ... callbacks省略
+})
+```
+
+## ハマりポイント：NODE_ENV の落とし穴
+
+実装中に一番時間を溶かしたのが、環境変数の扱いです。
+
+当初、ガード条件を以下のように書いていました。
+
+```typescript
+// ❌ 失敗したコード
+if (process.env.NODE_ENV !== "test") {
+  return null;
+}
+```
+
+Playwright は NODE_ENV=test で実行されるのでこれで良さそうに見えます。
+しかし、Next.js のサーバー自体 は `pnpm dev` で起動しており、この時の環境変数は `development` です。
+
+結果、**テストランナー(test)はログインしようとするが、サーバー(development)がそれを拒否する** という状況になり、永遠に Sign in failed エラーが出続けました。
+
+## 教訓
+
+ガード条件は「テスト環境のみ許可」ではなく、「本番環境のみ拒否 (`process.env.NODE_ENV === "production"`)」 とするのが安全かつ確実です。
+
+## まとめ
+
+今回の対応で、以下の成果が得られました。
+
+1.Google依存の排除: 外部要因でテストが落ちることがなくなった。
+
+2.高速化: ログイン処理が一瞬で終わるようになった。
+
+3.JWTへの移行: DBアクセスが減り、本番のパフォーマンスも向上した（副次的効果）。
+
+「テストのために本番コードを弄るのは負け」という考え方もありますが、「テスト容易性（Testability）の高いアーキテクチャを選ぶ」 ことも、必要だと実感しました。
