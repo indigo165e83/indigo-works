@@ -9,7 +9,7 @@ draft: false
 
 ---
 
-Next.js + NextAuth (v5) で構築された「Free Images」というサービスに E2E テスト（Playwright）を導入しました。
+Next.js + NextAuth (v5) で構築された、AI画像ストックサイト「[free-images](https://free-images.indigo165e83.com)」というサービスに E2E テスト（Playwright）を導入しました。
 
 初期段階では「Googleログインしかないから、テストが難しいな」くらいに考えていたのですが、実際は**認証基盤のアーキテクチャ変更**にまで発展する大工事となりました。
 
@@ -112,7 +112,7 @@ Playwright は NODE_ENV=test で実行されるのでこれで良さそうに見
 
 ## 教訓
 
-ガード条件は「テスト環境のみ許可」ではなく、「本番環境のみ拒否 (`process.env.NODE_ENV === "production"`)」 とするのが安全かつ確実です。
+ガード条件は **「テスト環境のみ許可」** ではなく、 **「本番環境のみ拒否 (`process.env.NODE_ENV === "production"`)」** とするのが安全かつ確実です。
 
 ## まとめ
 
