@@ -1,0 +1,103 @@
+---
+title: Next.js認証の深堀り：JWTという『透明な証明書』をどう扱うか？
+date: 2026-02-06
+slug: blog/20260207_nextjs-auth-jwt-deep-dive
+authors: [indigo]
+tags: [Next.js, Auth.js, セキュリティ, JWT]
+featured: true
+draft: false
+
+---
+
+Next.js（App Router）での認証実装。ライブラリが優秀すぎて「なぜか動く」状態になりがちですが、一歩踏み込んで **JWT（JSON Web Token ジョット）** の仕組みを理解すると、デバッグの質が劇的に変わります。
+
+今回は、Auth.js（NextAuth）を例に、JWTの正体と現場で使えるTipsをまとめました。
+
+{/* excerpt */}
+
+## 認証は「パスポート」と「搭乗券」のリレー
+
+Webサイトの認証フローは、空港のプロセスに例えると非常にクリアになります。
+
+1.  **ログイン（認証）**: ID/PWを提示して本人確認をする（パスポート提示）。
+2.  **トークン発行**: サーバーが「この人は本人です」という証明書を発行する（搭乗券の発行）。
+3.  **アクセス（認可）**: 以降、ブラウザがその証明書を自動で提示する。
+
+この「搭乗券」の役割を果たすのが **JWT** です。
+
+## JWTの正体は「透明なガラスケース」
+
+JWTについて最も誤解されやすいのは、 **「中身は暗号化されていない」** という点です。
+
+JWTはドット（`.`）で区切られた3つのパートで構成されていますが、本文（ペイロード）は単にBase64で変換されているだけ。誰でも中身を読めてしまいます。
+
+### ❌ NG例：機密情報を入れてしまう
+```json
+{
+  "userId": "123",
+  "password": "hashed_password_abc", // 絶対にダメ！
+  "address": "東京都..." // 個人情報も避けるべき
+}
+```
+
+### ✅ OK例：識別子と期限に留める
+```json
+{
+  "sub": "user_8k92jL0s", // ユーザーID
+  "role": "ADMIN",       // 権限
+  "exp": 1709859015      // 有効期限
+}
+```
+
+「中身は見えてもいいが、署名（ハンコ）があるから書き換えはできない」。これがJWTの鉄則です。
+
+## 現場で使える「デバッグとテスト」の実践
+
+### 1. ターミナルでJWTを覗き見る
+
+Auth.jsのデフォルトではCookieが暗号化されているため、ブラウザのデベロッパーツールから直接中身を読むのは困難です。
+
+そんな時は auth.ts の jwt コールバックにログを仕込むのが最速です。
+
+```typescript
+// auth.ts
+callbacks: {
+  async jwt({ token, user }) {
+    if (user) {
+      token.role = user.role;
+    }
+    console.log("DEBUG [JWT]:", token); // サーバー側のログで規約通りの sub や exp を確認
+    return token;
+  },
+}
+```
+
+### 2. 安全なテストログインの実装
+
+開発中、いちいちGoogleログインをするのは手間ですよね。かといってコードにパスワードを直書きするのは論外です。
+
+以下のように環境変数と NODE_ENV を組み合わせるのが「エンジニアの作法」です。
+
+```typescript
+Credentials({
+  authorize: async (credentials) => {
+    if (process.env.NODE_ENV === "production") return null; // 本番では絶対動作させない
+
+    if (
+      credentials.email === process.env.TEST_ADMIN_EMAIL &&
+      credentials.password === process.env.TEST_ADMIN_PASSWORD
+    ) {
+      return { id: "test-id", role: "ADMIN" };
+    }
+    return null;
+  },
+})
+```
+
+## まとめ：規約を知ると、自由になれる
+
+JWTには RFC 7519 という国際規格があります。
+なぜユーザーIDが id ではなく sub なのか、なぜ期限が exp なのか。これらの「3文字の規約」を知っておくと、Auth.jsから別のライブラリ（Better Authなど）へ移行した際や、Supabase等のBaaSを使う際も、共通の知識として活用できます。
+
+「なんとなく動く認証」から「仕組みを理解した堅牢な認証」へ。
+皆さんのNext.js開発の一助になれば幸いです。
