@@ -15,3 +15,10 @@ h1, h2, h3 {
   padding-top: 0.5rem !important; /* デフォルトは広いため小さくする */
   padding-bottom: 0.5rem !important; /* デフォルトは広いため小さくする */
 }
+/* ヒーロー画像のサイズを小さくする */
+.hero > img {
+  /* 最大幅を制限して小さく表示させる */
+  width: 250px !important; /* お好みで 150px〜250px くらいに調整 */
+  height: auto !important;
+  object-fit: contain;
+}
