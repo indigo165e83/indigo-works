@@ -5,6 +5,8 @@ import starlightBlog from 'starlight-blog';
 
 import sitemap from '@astrojs/sitemap';
 
+import react from '@astrojs/react';
+
 // https://astro.build/config
 export default defineConfig({
     site: 'https://www.indigo165e83.com',
@@ -66,5 +68,5 @@ export default defineConfig({
                 ],					
             },
         ],
-		}), sitemap()],
+        }), sitemap(), react()],
 });
