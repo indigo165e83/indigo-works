@@ -9,3 +9,9 @@
 h1, h2, h3 {
   color: #3d8fb5 !important;
 }
+
+/* ヒーローセクション（トップの大きな画像・文字部分）の下の余白を減らす */
+.hero {
+  padding-top: 0.5rem !important; /* デフォルトは広いため小さくする */
+  padding-bottom: 0.5rem !important; /* デフォルトは広いため小さくする */
+}
