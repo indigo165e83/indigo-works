@@ -51,10 +51,6 @@ export default defineConfig({
           link: '/works/',
         },
         {
-          label: 'Blog',
-          link: '/blog/',
-        },
-        {
           label: 'JSTQB',
           items: [
             { link: 'jstqb/', label: 'Overview' },
@@ -63,6 +59,10 @@ export default defineConfig({
               link: '/jstqb/foundation-v4/',
             },
           ],
+        },
+        {
+          label: 'Tech Blog',
+          link: '/blog/',
         },
         {
           label: 'お問い合わせ Contact',
