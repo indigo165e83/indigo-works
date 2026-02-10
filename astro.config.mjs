@@ -39,7 +39,7 @@ export default defineConfig({
           label: 'GitHub',
           icon: 'github',
           href: 'https://github.com/indigo165e83/indigo-works',
-        },
+        }
       ],
       sidebar: [
         {

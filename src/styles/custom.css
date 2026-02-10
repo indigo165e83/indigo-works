@@ -22,3 +22,19 @@ h1, h2, h3 {
   height: auto !important;
   object-fit: contain;
 }
+/* 1. ヒーローエリアのDonateボタンをピンクにする */
+a.donate-button-hero {
+  background-color: #ec4899 !important; /* ピンク色 */
+  color: white !important;
+  border: 1px solid #ec4899 !important;
+  /* 左右の余白を広げる設定 */
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+}
+/* ホバー時の色（少し濃くする） */
+a.donate-button-hero:hover {
+  background-color: #db2777 !important;
+  border-color: #db2777 !important;
+  opacity: 0.9;
+}
+
