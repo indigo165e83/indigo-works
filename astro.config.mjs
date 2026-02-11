@@ -11,6 +11,9 @@ export default defineConfig({
     starlight({
       title: 'Indigo Works',
       pagination: false,
+      components: {
+        Head: './src/components/Head.astro',
+      },
       plugins: [
         starlightBlog({
           title: 'Blog',
