@@ -1,0 +1,8 @@
+---
+import Default from '@astrojs/starlight/components/Head.astro';
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+---
+
+<Default {...Astro.props}><slot /></Default>
+<link rel="canonical" href={canonicalURL.href} />
