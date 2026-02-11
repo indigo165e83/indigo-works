@@ -58,6 +58,10 @@ export default defineConfig({
               label: 'Foundation Level (V4.0) 要約',
               link: '/jstqb/foundation-v4/',
             },
+            {
+              label: 'Advanced Level (TAE) 要約',
+              link: '/jstqb/advanced-tae/',
+            },
           ],
         },
         {
