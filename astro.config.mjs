@@ -62,12 +62,16 @@ export default defineConfig({
               link: '/jstqb/overview/',
             },
             {
-              label: 'Foundation Level (V4.0) 要約',
+              label: 'Foundation Level シラバス 要約',
               link: '/jstqb/foundation-v4/',
             },
             {
-              label: 'Advanced Level (TAE) 要約',
+              label: 'Advanced Level テスト自動化エンジニア(TAE) シラバス 要約',
               link: '/jstqb/advanced-tae/',
+            },
+            {
+              label: 'Foundation Level AIテスティング(CT-AI) シラバス 要約',
+              link: '/jstqb/foundation-ctai/',
             },
           ],
         },
