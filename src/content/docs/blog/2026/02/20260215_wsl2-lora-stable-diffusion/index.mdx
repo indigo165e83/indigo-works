@@ -42,7 +42,7 @@ WSL2環境でのセットアップから、実際の訓練、そして画像生�
 
 ### 1.1 Python環境のセットアップ
 
-WSL2環境では、システムのPythonではなくpyenvで管理することを強く推奨します。
+WSL2環境では、システムのPythonではなくpyenvで管理することを推奨します。
 
 ```bash
 # pyenvのインストール
@@ -277,6 +277,8 @@ pip install "numpy<2" --break-system-packages
 
 NumPy 2.xとNumPy 1.xの互換性問題です。TensorFlowなどの依存パッケージがNumPy 1.xでコンパイルされているため、ダウングレードが必要です。
 
+※ このオプションは本来推奨されません。（仮想環境外への影響がある）今回は仮想環境内での実行を前提としているため使用しましたが、本来は注意が必要です
+
 ### 4.2 Stable Diffusion WebUIのインストールエラー
 
 WSL2環境でStable Diffusion WebUIのインストールに失敗しました：
@@ -300,17 +302,17 @@ ERROR: Failed to build CLIP
 
 最終的にWindows 11でStability Matrixを使用しました：
 
-1. Stability Matrixをダウンロード・インストール
+1. [Stability Matrix](https://github.com/LykosAI/StabilityMatrix)をダウンロード・インストール
 2. Stable Diffusion WebUIパッケージをインストール
 3. LoRAファイルとベースモデルを配置
 
 ```bash
 # WSL2からWindowsへファイルコピー
 cp ~/ml_projects/outputs/cookie_lora/cookie_lora.safetensors \
-   /mnt/d/creative/061_StabilityMatrix/Data/Models/Lora/
+   /mnt/d/[your-path-to-stability-matrix]/Data/Models/Lora/
 
 cp ~/ml_projects/models/realisticVisionV60B1_v51HyperVAE.safetensors \
-   /mnt/d/creative/061_StabilityMatrix/Data/Models/StableDiffusion/
+   /mnt/d/[your-path-to-stability-matrix]/Data/Models/StableDiffusion/
 ```
 
 ### 5.2 画像生成
@@ -391,7 +393,6 @@ WSL2環境でペット専用のLoRAモデルを訓練し、Stable Diffusionで�
 **今後の展開**:
 - 生成した画像をWebサイトでアニメーション化
 - 様々なポーズ・表情のバリエーション生成
-- 他のペットでも同様のプロセスを試す
 
 この記事が、ペット専用AIモデルを作成したい方の参考になれば幸いです。
 
@@ -401,3 +402,26 @@ WSL2環境でペット専用のLoRAモデルを訓練し、Stable Diffusionで�
 - [Stability Matrix](https://github.com/LykosAI/StabilityMatrix)
 - [Civitai](https://civitai.com/)
 - [pyenv GitHub](https://github.com/pyenv/pyenv)
+
+## 追記
+
+実際にこのプロセスを経て生成されたクッキー（のAI分身）がこちらです。
+
+![Generated Cookie Image](2026-02-14/00001-2843936366.png)
+*クッキーが5匹！？*
+
+これは「1rabbit」というプロンプトに対して、解像度（896x1152）が広すぎたために「スペース余ってるし、もう何匹か置いとくか！」とAIが気を利かせた結果のようです。
+
+画像サイズを512x512にして再度生成しました。
+
+![Generated Cookie Image](2026-02-15/00000-3162487967.png)
+*クッキーが2匹。物理法則が少し怪しげです。*
+
+![Generated Cookie Image](2026-02-15/00001-2122136207.png)
+*こちらもクッキーがまだ2匹。親子・・・？*
+
+クッキー毛の質感や模様がリアルに再現されているのはGoodですが、物理法則が少し怪しげです。かわいさも足りないです。
+
+学習データ用の画像に「毛づくろい中の変なポーズ」が多く含みすぎていた可能性が大です。もう少しバリエーション豊かにする必要がありそうです。
+
+もっと調整して、クッキーのかわいさが引き立つような画像を生成しようと思います！
