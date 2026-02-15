@@ -56,7 +56,11 @@ export default defineConfig({
         {
           label: 'JSTQB',
           items: [
-            { link: 'jstqb/', label: 'Overview' },
+            { link: 'jstqb/', label: 'Index' },
+            {
+              label: 'Overview',
+              link: '/jstqb/overview/',
+            },
             {
               label: 'Foundation Level (V4.0) 要約',
               link: '/jstqb/foundation-v4/',
