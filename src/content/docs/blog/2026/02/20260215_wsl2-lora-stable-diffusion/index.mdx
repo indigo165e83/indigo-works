@@ -1,15 +1,15 @@
 ---
-title: WSL2環境でペット専用LoRAを訓練してStable Diffusionで画像生成するまでのまとめ
+title: WSL2環境でペット専用LoRAを訓練してStability Matrixで画像生成するまでのまとめ
 date: 2026-02-15
 slug: blog/20260215_wsl2-lora-stable-diffusion
 description: 愛するペットの写真からAI画像生成用のLoRAモデルを作成し、オリジナル画像を生成するまでの技術的な手順を詳しく解説します。
 author: 'indigo'
-tags: ['AI', 'Machine Learning', 'Stable Diffusion', 'LoRA', 'WSL2', 'Deep Learning']
+tags: ['AI', 'Machine Learning', 'Stability Matrix', 'LoRA', 'WSL2', 'Deep Learning']
 ---
 
 ## はじめに
 
-この記事では、ペット（うさぎ）のクッキーの写真から専用のLoRAモデルを訓練し、Stable Diffusionで画像生成するまでの全工程を解説します。
+この記事では、ペット（うさぎ）のクッキーの写真から専用のLoRAモデルを訓練し、Stability Matrixで画像生成するまでの全工程を解説します。
 
 WSL2環境でのセットアップから、実際の訓練、そして画像生成まで、実際に遭遇したトラブルシューティングも含めて詳しく記録しています。
 
@@ -294,6 +294,8 @@ ERROR: Failed to build CLIP
 2. 仮想環境の再作成
 3. CLIPの手動インストール
 
+など、様々な方法を試しました。ここでかなり時間を溶かしましたが、結局、WSL2環境で解決できませんでした。
+
 **最終的な解決**: WSL2でのローカルインストールを諦め、Windows側でStability Matrixを使用することに決定しました。
 
 ## 5. 画像生成のセットアップ
@@ -303,8 +305,7 @@ ERROR: Failed to build CLIP
 最終的にWindows 11でStability Matrixを使用しました：
 
 1. [Stability Matrix](https://github.com/LykosAI/StabilityMatrix)をダウンロード・インストール
-2. Stable Diffusion WebUIパッケージをインストール
-3. LoRAファイルとベースモデルを配置
+2. LoRAファイルとベースモデルを配置
 
 ```bash
 # WSL2からWindowsへファイルコピー
