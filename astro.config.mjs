@@ -54,6 +54,10 @@ export default defineConfig({
           link: '/works/',
         },
         {
+          label: 'Essential Scrum',
+          link: '/design/essential-scrum/',
+        },
+        {
           label: 'JSTQB',
           items: [
             { link: 'jstqb/', label: 'Index' },

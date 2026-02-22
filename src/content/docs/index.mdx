@@ -23,7 +23,7 @@ hero:
 ---
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
-import { Image, NotebookPen, Hammer, ShieldCheck, CircleUserRound } from 'lucide-react';
+import { Image, NotebookPen, Hammer, ShieldCheck, CircleUserRound, Shapes } from 'lucide-react';
 
 ## Highlights
 
@@ -83,6 +83,19 @@ import { Image, NotebookPen, Hammer, ShieldCheck, CircleUserRound } from 'lucide
     **JSTQB資格**<br />
     JSTQB Foundation Level 合格のための学習ノート。<br />
     <a href="/jstqb/">ドキュメントを見る</a>
+  </Card>
+
+  {/* Essential Scrum */}
+  <Card>
+    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+      <div style="color: #3b82f6;">
+        <Shapes size={28} />
+      </div>
+      <span style="font-size: 1.5rem; font-weight: bold;">Essential Scrum</span>
+    </div>
+    **スクラム開発**<br />
+    『エッセンシャル スクラム』の学習ノート。<br />
+    <a href="/design/essential-scrum/">ドキュメントを見る</a>
   </Card>
 
   {/* About */}
