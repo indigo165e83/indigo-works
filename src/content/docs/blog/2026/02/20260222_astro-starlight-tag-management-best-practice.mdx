@@ -1,0 +1,159 @@
+---
+title: Astro + Starlightブログにおけるタグ管理のベストプラクティス（Zodを使った表記揺れの防止）
+date: 2026-02-22
+slug: blog/20260222_astro-starlight-tag-management-best-practice
+authors: [indigo]
+tags: [astro, starlight, typescript, zod]
+description: AstroとStarlightを使ったブログで、タグの大文字小文字や記号などの表記揺れを防ぎ、Zodを活用して美しく一元管理するためのベストプラクティスを紹介します。
+---
+
+## はじめに
+
+AstroとStarlight（starlight-blog）を使って技術ブログを運用していると、記事が増えるにつれて気になってくるのが**「タグの表記揺れ」**です。
+
+例えば、記事のフロントマターで以下のようにタグを指定していくと…
+
+```yaml
+# 記事A
+tags: [Git, Next.js, UI/UX]
+
+# 記事B
+tags: [git, nextjs, ui-ux]
+
+```
+
+サイト上では「Git」と「git」が別のタグとして扱われてしまい、タグ一覧ページが分散してしまいます。
+毎回「大文字だっけ？記号は入れるんだっけ？」と過去の記事を確認しながら入力するのはミスが起きやすく、執筆体験もよくありません。
+
+そこで今回は、**Zodの `transform` 機能を活用して、システム側でタグの表記を自動的に正規化・統一するベストプラクティス**をご紹介します。
+
+{/* excerpt */}
+
+## Zodとは？なぜAstroで使われるのか
+
+今回の解決策の鍵となるのが **[Zod](https://zod.dev/)** です。
+
+Zodは、TypeScriptファーストのスキーマ宣言およびバリデーション（データ検証）ライブラリです。「このデータは文字列の配列であるべき」「この項目は必須である」といったルール（スキーマ）を定義し、実際のデータがそのルールに従っているかをチェックしてくれます。
+
+Astro（およびStarlight）の **Content Collections** という機能では、MarkdownやMDXのフロントマター（記事先頭のメタデータ）の型を厳格に管理するために、このZodが標準で組み込まれています。
+
+Zodが特に優れているのは、単に「データが正しいか弾く（バリデーション）」だけでなく、**「データを別の望ましい形に変換する（トランスフォーム）」** 機能を持っている点です。今回はこの機能を活用します。
+
+## 解決策：Zodスキーマと辞書（Map）を使った自動変換
+
+アプローチは非常にシンプルです。
+`src/content.config.ts` に「タグの辞書」を用意し、記事がビルドされる際にZodの機能を使って**「入力されたタグ（スラッグ）」を「正式名称」に自動変換**する処理を挟み込みます。
+
+### 1. `src/content.config.ts` の実装
+
+以下のコードを `src/content.config.ts` に記述します。
+
+```typescript
+// src/content.config.ts
+import { defineCollection, z } from 'astro:content';
+import { docsLoader } from '@astrojs/starlight/loaders';
+import { docsSchema } from '@astrojs/starlight/schema';
+import { blogSchema } from 'starlight-blog/schema';
+
+// ▼ 1. タグの正式名称を管理する辞書（キーはすべて小文字で定義します）
+const TAG_MAP: Record<string, string> = {
+  'git': 'Git',
+  'github': 'GitHub',
+  'nextjs': 'Next.js',
+  'next.js': 'Next.js', // 記号入りの表記揺れ対策
+  'react': 'React',
+  'typescript': 'TypeScript',
+  'javascript': 'JavaScript',
+  'astro': 'Astro',
+  'starlight': 'Starlight',
+  'ui-ux': 'UI/UX',
+  'jstqb': 'JSTQB',
+  'claude-code': 'Claude Code',
+  'playwright': 'Playwright',
+  'ai': 'AI',
+};
+
+export const collections = {
+  docs: defineCollection({
+    loader: docsLoader(),
+    schema: docsSchema({
+      // docsSchema の extend を使って blogSchema を統合し、さらにタグを変換します
+      extend: (context) => {
+        // starlight-blog のベーススキーマを読み込む
+        const baseSchema = blogSchema(context);
+
+        // ▼ 2. そのスキーマの `tags` フィールドの動作を上書き（拡張）する
+        return baseSchema.extend({
+          tags: z.array(z.string())
+            .optional()
+            .transform((tags) => {
+              if (!tags) return undefined;
+              
+              return tags.map((tag) => {
+                // 入力されたタグを小文字化してキーにする
+                const key = tag.toLowerCase();
+                // 辞書にあれば正式名称を、なければ入力された文字をそのまま返す
+                return TAG_MAP[key] || tag;
+              });
+            }),
+        });
+      },
+    }),
+  }),
+};
+
+```
+
+### 2. コードの解説（Zodの動き）
+
+注目すべきは `tags: z.array(z.string()).optional().transform(...)` の部分です。
+
+1. **`z.array(z.string()).optional()`**: まず、入力されたフロントマターの `tags` が「文字列の配列」であること（または未定義であること）を検証します。
+2. **`.transform(...)`**: 検証を通過した安全な配列データを受け取り、中のタグを一つずつループ（`map`）して変換します。
+3. **フォールバック処理**: `return TAG_MAP[key] || tag;` とすることで、「辞書に登録されていないタグは、入力された文字をそのまま使う」という柔軟な仕様にしています。
+
+---
+
+## 運用ルール：タグは「小文字・ケバブケース」で書く
+
+この仕組みを導入したら、今後の記事執筆時のルールはたった1つです。
+
+**「タグは小文字・ケバブケース（スラッグ）で入力する」**
+
+```yaml
+---
+title: Next.jsとStarlightの連携について
+date: 2026-02-22
+slug: blog/nextjs-starlight-integration
+tags: [nextjs, starlight, ui-ux]
+---
+
+```
+
+このようにID感覚で機械的に入力するだけで、サイトに表示される際にはZodの変換処理が走り、**`Next.js`**, **`Starlight`**, **`UI/UX`** という美しい正式名称になります。執筆時に大文字小文字を気にする必要はもうありません。
+
+### 辞書にない「マイナーなタグ」はどうなる？
+
+すべてのタグを事前に辞書登録するのは面倒です。
+しかし今回の実装では「辞書になければそのまま返す」仕組みにしているため、**辞書に登録していないタグは、フロントマターに書いた通りの大文字・小文字でそのまま表示されます。**
+
+```yaml
+---
+tags: [Docker, VS Code, ベランダ菜園]
+---
+
+```
+
+（※これらは辞書にないため、そのまま `Docker`, `VS Code`, `ベランダ菜園` と表示されます）
+
+つまり、以下のようなハイブリッドな運用が可能です。
+
+1. **基本ルール**: 頻繁に使う主要な技術タグは `[git, nextjs]` のように小文字スラッグで書き、辞書で綺麗に統一する。
+2. **特例ルール**: 今回しか使わないような単語は、辞書を更新せず、表示したい文字のまま `[Docker]` と直接書いてしまう。
+
+## まとめ
+
+Astro（Starlight）のContent CollectionsとZodを組み合わせることで、**「執筆時はシンプルにID指定」「表示時は綺麗に整形された名称」** というモダンなタグ管理が実現できます。
+
+Zodは単なる型チェックツールではなく、データ変換のパイプラインとしても非常に優秀です。表記揺れによるタグの分散を防ぎつつ、新しいタグも気軽に追加できる柔軟性を備えたおすすめの構成ですので、ぜひ試してみてください！
+
