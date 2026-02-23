@@ -1,0 +1,84 @@
+---
+title: Next.js 16 × Gemini APIでAI画像ストックサイトを作った話
+date: 2026-02-01
+slug: blog/20260201-free-images-dev-log
+authors: [indigo]
+tags: [Next.js, TypeScript, Gemini, Prisma, Neon, 個人開発]
+excerpt: Next.js App RouterとGoogle Gemini APIを組み合わせて、画像の生成からタグ付け、翻訳、公開までを自動化するストックフォトサイトを構築しました。開発の裏側と技術的なハマりポイントを紹介します。
+featured: true
+draft: false
+
+---
+
+先週あたりから、「**自分だけの画像素材サイトが欲しい**」と思い立ち、Next.jsを使ってAI画像生成・ストックサイト『**[free-images](https://free-images.indigo165e83.com)**』を開発しています。
+
+単に画像を表示するだけでなく、**「AIにプロンプトを考えさせ、画像を生成し、勝手にタグ付けして投稿する」** という自動化を目指しました。
+
+今回は、その開発記録と、Next.js 16やVercelへのデプロイで遭遇した技術的なポイントをまとめたいと思います。
+
+## 作ったもの
+
+**free-images** GitHub: [indigo165e83/free-images](https://github.com/indigo165e83/free-images)
+
+{/* excerpt */}
+
+### 主な技術スタック
+* **Framework**: Next.js 16 (App Router)
+* **Language**: TypeScript
+* **Database**: PostgreSQL (Neon) / Prisma
+* **AI Model**: Google Gemini (`nano-banana-pro-preview`, `gemini-2.5-flash`)
+* **Storage**: AWS S3
+* **Auth**: NextAuth.js (v5)
+
+## 開発のこだわりポイント
+
+### 1. Geminiですべてを賄う「AIパイプライン」
+
+このサイトの最大の特徴は、画像生成のワークフロー全体にGoogleのGemini APIを活用している点です。`lib/server-utils.ts` に集約したロジックでは、以下のフローを自動化しています。
+
+1.  **プロンプト生成**: Geminiに「収益性が高そうなストックフォトのアイデア」を英語で考えさせる。
+2.  **画像生成**: 高速なモデル `nano-banana-pro-preview` で画像を生成。
+3.  **画像解析 (Vision)**: 生成された画像を `gemini-2.5-flash` に見せ、「何が写っているか」を解析し、日本語/英語のタグを自動生成。
+4.  **説明文生成**: 同様にSEO用の説明文（Alt text）を自動生成。
+5.  **翻訳**: プロンプトやメタデータを日英両対応に翻訳。
+
+これにより、人間はボタンを押す（あるいはスクリプトを走らせる）だけで、検索可能な状態の画像がDBに格納されます。
+
+### 2. ダウンロード機能とCORS/型定義の壁
+
+単純な画像サイトに見えて意外と苦戦したのが「ダウンロード機能」です。
+最初はS3のURLを直接 `a` タグでダウンロードさせようとしましたが、ブラウザのセキュリティ（CORS）に阻まれました。
+
+そこで、Next.jsのRoute Handler (`app/api/download/route.ts`) をプロキシとして挟む実装を行いました。
+
+ここでは画像処理ライブラリの sharp を使い、ユーザーが選択したサイズ（Original, Large, Medium, Small）に合わせてリアルタイムでリサイズして提供しています。
+
+ハマりポイント: Next.js 16 + TypeScriptの環境で、sharp が返す Buffer を NextResponse に渡そうとすると、厳密な型定義エラー（Buffer\<ArrayBufferLike\> is not assignable...）が発生しました。最終的に as any でキャストすることでビルドを通しましたが、Node.jsのBufferとWeb Standardの型定義のズレには注意が必要です。
+
+### 3. 「仮想カメラマン」による自動ストック
+Webの管理画面からポチポチ生成するのは疲れるので、スクリプト一発で大量にストックする機能も実装しました。
+
+スクリプトを作成し、確率で「フォトリアル」な画像と「アニメ調」の画像をランダムに生成するようにしています。
+
+これを回しておけば、寝ている間にもコンテンツが増えていきます。
+
+## デプロイ時のトラブルシューティング
+Vercelへのデプロイ時、データベース（Neon）への接続エラー (Can't reach database server) に悩まされました。
+
+原因は主に2つありました。
+
+1. Neonのスリープ: Neonは一定時間アクセスがないとスリープするため、デプロイ時の初回の接続でタイムアウトしてしまう。
+
+2. 接続タイムアウト設定: Prismaのデフォルトの待機時間が短すぎた。
+
+これは .env のデータベースURLに &connect_timeout=60 を追加し、接続待機時間を延ばすことで解決しました。サーバーレスDB特有の挙動として覚えておきたいポイントです。
+
+## 今後の展望
+
+現在は管理者（私）しか画像を生成できませんが、基本的な閲覧・検索・ダウンロード機能は整いました。今後は以下のような機能を考えています。
+
+- ユーザーによる「お気に入り」機能
+
+## まとめ
+
+Next.js 16は非常に開発体験が良く、Gemini APIとの連携もスムーズでした。個人開発の事例として参考になれば幸いです。
