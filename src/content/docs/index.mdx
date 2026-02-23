@@ -23,7 +23,7 @@ hero:
 ---
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
-import { Image, NotebookPen, Hammer, ShieldCheck, CircleUserRound, Shapes } from 'lucide-react';
+import { Image, NotebookPen, Hammer, ShieldCheck, CircleUserRound, Shapes, FileCode } from 'lucide-react';
 
 ## Highlights
 
@@ -96,6 +96,19 @@ import { Image, NotebookPen, Hammer, ShieldCheck, CircleUserRound, Shapes } from
     **スクラム開発**<br />
     『エッセンシャル スクラム』の学習ノート。<br />
     <a href="/design/essential-scrum/">ドキュメントを見る</a>
+  </Card>
+
+  {/* TypeScript 入門 */}
+  <Card>
+    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+      <div style="color: #ec4899;">
+        <FileCode size={28} />
+      </div>
+      <span style="font-size: 1.5rem; font-weight: bold;">プロを目指す人のためのTypeScript入門</span>
+    </div>
+    **TypeScript 入門**<br />
+    『プロを目指す人のためのTypeScript入門』の学習ノート。<br />
+    <a href="/coding/typescript-for-professionals/">ドキュメントを見る</a>
   </Card>
 
   {/* About */}

@@ -58,6 +58,10 @@ export default defineConfig({
           link: '/design/essential-scrum/',
         },
         {
+          label: 'TypeScript for Professionals',
+          link: '/coding/typescript-for-professionals/',
+        },
+        {
           label: 'JSTQB',
           items: [
             { link: 'jstqb/', label: 'Index' },
