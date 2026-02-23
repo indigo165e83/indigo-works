@@ -1,0 +1,45 @@
+---
+title: "1.3 TypeScript の開発環境"
+description: "TypeScriptの開発に必要なNode.jsのインストール、エディタの準備、プロジェクトの初期設定（tsconfig.json）についての要約"
+sidebar:
+  order: 4
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+TypeScriptを動かすためには、実行環境である **Node.js** と、プロジェクトごとの設定ファイルである **tsconfig.json** の準備が必要です。
+
+## 1.3.1 Node.js のインストール
+TypeScriptコンパイラ自体がNode.jsで実装されているため、まずはNode.jsをインストールします。
+
+* **推奨バージョン**: 本書では偶数番号の「メジャーバージョン（LTS）」の使用を推奨しています。
+* **インストール確認**: ターミナルで `node -v` を実行し、バージョンが表示されれば成功です。
+
+## 1.3.2 エディタの準備
+TypeScriptの開発には、Microsoftが開発している **Visual Studio Code (VS Code)** が最も推奨されます。TypeScriptのサポートが標準で組み込まれており、強力な入力補完をすぐに利用できます。
+
+## 1.3.3 ディレクトリの作成と TypeScript のインストール
+プロジェクトごとに独立した環境を作るのが一般的です。
+
+1. **プロジェクト初期化**: `npm init --yes` で `package.json` を作成します。
+2. **本体のインストール**: `npm install --save-dev typescript @types/node` を実行し、開発用依存関係としてインストールします。
+
+## 1.3.4 tsconfig.json の準備
+`tsconfig.json` は、TypeScriptコンパイラの挙動を細かく指定するための設定ファイルです。
+
+* **初期生成**: `npx tsc --init` コマンドでデフォルトの設定ファイルを生成できます。
+* **主な設定項目**: 
+    * `target`: 出力するJavaScriptのバージョン（例: `es2020`）。
+    * `module`: モジュールシステムの指定（例: `esnext`）。
+    * `outDir`: コンパイル後のファイルの出力先（例: `./dist`）。
+
+## 1.3.5 初めての TypeScript プログラム
+実際にコードを書いて動かしてみましょう。
+
+1. **ソース作成**: `src/index.ts` を作成し、コードを記述します（例: `const message: string = "Hello, world!";`）。
+2. **コンパイル**: `npx tsc` を実行すると、設定に従って JavaScript ファイルが生成されます。
+3. **実行**: 生成されたファイルを `node dist/index.js` で実行し、結果を確認します。
+
+<Aside type="tip" title="学習のポイント">
+プロジェクトのルートにある `tsconfig.json` を一度覗いてみてください。本書で解説されている設定が実際にどう使われているかを確認することで、環境構築への理解がより深まります。また、開発中は `npx tsc --watch` を使うと、ファイルを保存するたびに自動でコンパイルしてくれるので効率的です。
+</Aside>
