@@ -5,7 +5,23 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 if (!canonicalURL.hostname.startsWith('www.')) {
   canonicalURL.hostname = `www.${canonicalURL.hostname}`;
 }
+
+const adsenseExcludedPaths = [
+  '/design/essential-scrum/',
+  '/coding/typescript-for-professionals/',
+  '/jstqb/',
+];
+const isAdsenseExcluded = adsenseExcludedPaths.some((path) =>
+  Astro.url.pathname.startsWith(path)
+);
 ---
 
 <Default {...Astro.props}><slot /></Default>
 <link rel="canonical" href={canonicalURL.href} />
+{!isAdsenseExcluded && (
+  <script
+    is:inline
+    async
+    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6897468555074184"
+    crossorigin="anonymous"></script>
+)}

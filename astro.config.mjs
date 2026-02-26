@@ -26,16 +26,7 @@ export default defineConfig({
           },
         }),
       ],
-      head: [
-        {
-          tag: 'script',
-          attrs: {
-            async: true,
-            src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6897468555074184',
-            crossorigin: 'anonymous',
-          },
-        },
-      ],
+      head: [],
       customCss: ['./src/styles/custom.css'],
       social: [
         {
