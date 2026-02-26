@@ -1,4 +1,9 @@
 User-agent: *
 Allow: /
 
+User-agent: Mediapartners-Google
+Disallow: /design/essential-scrum/
+Disallow: /coding/typescript-for-professionals/
+Disallow: /jstqb/
+
 Sitemap: https://www.indigo165e83.com/sitemap-index.xml
