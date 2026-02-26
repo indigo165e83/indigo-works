@@ -91,6 +91,7 @@ export default defineConfig({
           label: 'お問い合わせ Contact',
           items: [
             { label: 'プライバシーポリシー', link: '/privacy' },
+            { label: '利用規約', link: '/terms' },
             {
               label: 'お問い合わせ',
               link: 'https://docs.google.com/forms/d/e/1FAIpQLSfWK-b7UUl3oYis1MyrF7_51YlSi-NXmJ3izsFViIUpD_mqfg/viewform?usp=header',
