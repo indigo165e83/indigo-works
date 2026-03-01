@@ -1,0 +1,107 @@
+---
+title: Cloudflare PagesにAWS Route 53管理のカスタムドメインを設定する
+date: 2026-03-01
+slug: blog/20260301-cloudflare-pages-custom-domain
+authors: [indigo]
+tags: [Cloudflare, AWS, Route53, DNS, カスタムドメイン]
+description: Cloudflare Pagesで公開しているサイトに、AWS Route 53で管理しているドメインをカスタムドメインとして設定する手順を解説します
+featured: false
+draft: false
+---
+
+Cloudflare Pagesで公開しているサイトに、AWS Route 53で管理しているドメインをカスタムドメインとして設定する手順を解説します。今回は `your-project.pages.dev` で公開しているサイトを `www.yourdomain.com` で表示できるようにします。
+
+{/* excerpt */}
+
+## なぜ `yourdomain.com` ではなく `www.yourdomain.com` をメインにするのか
+
+ベストプラクティスは **`www.yourdomain.com` をメインにして、`yourdomain.com` からリダイレクト** する構成です。
+
+理由はDNSの仕様にあります。Cloudflare PagesはCNAMEレコードを使ってドメインを紐付けますが、**ルートドメイン（`yourdomain.com`）にはCNAMEレコードを設定できません**（RFC上の制約）。Route 53ではALIASレコードという独自機能で回避できますが、Cloudflare Pages向けの直接ALIASは設定できないため、`www` サブドメインを使う方がシンプルです。
+
+## Step 1: Cloudflare PagesにカスタムドメインのCNAMEを設定する
+
+1. Cloudflare Dashboard → 対象のPagesプロジェクト → **「Custom domains」** タブを開く
+2. **「Set up a custom domain」** をクリック
+3. `www.yourdomain.com` を入力して進む
+4. Setup Methodの選択画面で **「My DNS provider」→「Begin CNAME setup」** をクリック
+   - ドメインがCloudflare管理の場合は「Cloudflare DNS」を選ぶと自動設定されますが、今回はRoute 53管理のため「My DNS provider」を選択します
+5. 表示されるCNAMEレコードの情報をメモする
+
+```
+Name   : www
+Target : your-project.pages.dev
+```
+
+## Step 2: AWS Route 53にCNAMEレコードを追加する
+
+1. AWS Console → **Route 53** → `yourdomain.com` のホストゾーンを開く
+2. **「レコードを作成」** をクリック
+3. 以下を入力して保存する
+
+| 項目 | 値 |
+| :--- | :--- |
+| **レコード名** | `www` |
+| **タイプ** | `CNAME` |
+| **値** | `your-project.pages.dev` |
+| **TTL** | `300` |
+
+Route 53側で「レコードが正常に作成されました」と表示されれば成功です。
+
+## Step 3: Cloudflare側でDNS確認を待つ
+
+Cloudflare PagesのCustom domains画面に戻ると、`www.yourdomain.com` が **「Inactive (Requires DNS setup)」** の状態になっています。
+
+DNS変更が世界中に伝播するまで**最大24時間**かかりますが、通常は数分〜数時間で反映されます。しばらく待ってからページをリロードすると **「Active・SSL enabled」** に変わります。
+
+![Cloudflare Custom domains Active状態]
+
+SSL証明書も自動で発行されるため、別途設定は不要です。
+
+## おまけ：`yourdomain.com`（ルートドメイン）からのリダイレクト設定
+
+`yourdomain.com` にアクセスした人を `www.yourdomain.com` にリダイレクトするには、**S3の静的ウェブサイトホスティング機能**を使います。
+
+### S3バケットを作成する
+
+1. AWS Console → **S3** → **「バケットを作成」**
+2. **バケット名を `yourdomain.com`（ドメイン名と完全一致）** で作成
+   - リージョン: `us-east-1`（バージニア北部）
+3. **「パブリックアクセスをすべてブロック」のチェックを外す**
+
+### S3でリダイレクトを設定する
+
+1. 作成したバケット → **「プロパティ」** タブ
+2. **「静的ウェブサイトホスティング」** → 「編集」
+3. 以下を設定して保存
+
+| 項目 | 値 |
+| :--- | :--- |
+| **ホスティングタイプ** | オブジェクトのリクエストをリダイレクトする |
+| **ホスト名** | `www.yourdomain.com` |
+| **プロトコル** | `https` |
+
+### Route 53にALIASレコードを追加する
+
+1. Route 53 → `yourdomain.com` ホストゾーン → **「レコードを作成」**
+2. 以下を設定して保存
+
+| 項目 | 値 |
+| :--- | :--- |
+| **レコード名** | 空欄（ルートドメイン） |
+| **タイプ** | `A` |
+| **エイリアス** | オン |
+| **トラフィックのルーティング先** | S3ウェブサイトエンドポイントへのエイリアス（`us-east-1`） |
+
+バケット名がドメイン名と一致していれば、Route 53が自動でS3エンドポイントを候補として表示します。
+
+## まとめ
+
+今回の設定をまとめると以下のとおりです。
+
+| アクセスURL | 動作 |
+| :--- | :--- |
+| `www.yourdomain.com` | Cloudflare Pages のサイトが表示される |
+| `yourdomain.com` | `www.yourdomain.com` へ301リダイレクト |
+
+Cloudflare PagesとAWS Route 53を組み合わせた構成でも、CNAMEとS3リダイレクトを使えばスムーズにカスタムドメインを設定できます。
