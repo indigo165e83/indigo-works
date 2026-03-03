@@ -22,6 +22,8 @@ const TAG_MAP: Record<string, string> = {
   'claude-code': 'Claude Code',
   'playwright': 'Playwright',
   'ai': 'AI',
+  'notebooklm': 'NotebookLM',
+  'qa': 'QA',
 };
 
 export const collections = {
