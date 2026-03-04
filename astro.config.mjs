@@ -55,7 +55,6 @@ export default defineConfig({
         {
           label: 'JSTQB',
           items: [
-            { link: 'jstqb/', label: 'Index' },
             {
               label: 'Overview',
               link: '/jstqb/overview/',
