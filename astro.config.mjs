@@ -64,6 +64,14 @@ export default defineConfig({
               link: '/jstqb/foundation-v4/',
             },
             {
+              label: 'Advanced Level テストアナリスト (AL-TA) シラバス 要約',
+              link: '/jstqb/advanced-ta/',
+            },
+            {
+              label: 'Advanced Level テストマネージャ (AL-TM) シラバス 要約',
+              link: '/jstqb/advanced-tm/',
+            },
+            {
               label: 'Advanced Level テスト自動化エンジニア(TAE) シラバス 要約',
               link: '/jstqb/advanced-tae/',
             },
