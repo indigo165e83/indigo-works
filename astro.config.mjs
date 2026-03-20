@@ -53,6 +53,10 @@ export default defineConfig({
           link: '/coding/typescript-for-professionals/',
         },
         {
+          label: 'Introducing Python 3',
+          link: '/coding/introducing-python-3/',
+        },
+        {
           label: 'JSTQB',
           items: [
             {
