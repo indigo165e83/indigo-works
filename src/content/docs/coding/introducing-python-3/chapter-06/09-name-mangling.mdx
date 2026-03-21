@@ -1,0 +1,79 @@
+---
+title: "6.9 非公開属性のための名前のマングリング"
+description: "Pythonで属性を外部から隠す（非公開にする）ための命名規則と、「名前のマングリング（変形）」の仕組みについての要約"
+sidebar:
+  order: 37
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Pythonには、他の言語にあるような「完全にアクセス不可能な非公開（プライベート）属性」を作る厳密な仕組みはありません。
+しかし、**クラス定義の外からは見えないようにすべき属性**を示すための特別な命名方法が用意されています。
+
+## ダブルアンダースコア (`__`) による非公開化
+
+属性名の先頭に2つのアンダースコア（`__`）を付けると、その属性は外部から直接アクセスできなくなります。
+前章の `Duck` クラスの隠し属性 `hidden_name` を `__name` に変更して試してみましょう。
+
+```python
+class Duck():
+    def __init__(self, input_name):
+        # 属性名の先頭に __ を付けて非公開にする
+        self.__name = input_name
+
+    @property
+    def name(self):
+        print('inside the getter')
+        return self.__name
+
+    @name.setter
+    def name(self, input_name):
+        print('inside the setter')
+        self.__name = input_name
+```
+
+## アクセスのテスト
+
+プロパティ（`name`）を経由したアクセスは、これまで通り正しく動作します。
+
+```python
+fowl = Duck('Howard')
+
+# プロパティ経由のアクセスは成功する
+print(fowl.name)
+# 出力:
+# inside the getter
+# Howard
+
+fowl.name = 'Donald'
+# 出力: inside the setter
+```
+
+しかし、`__name` 属性に直接アクセスしようとすると、エラーが発生します。
+
+```python
+# 非公開属性への直接アクセスは失敗する
+print(fowl.__name)
+
+# 出力結果（エラー）:
+# Traceback (most recent call last):
+#   File "<stdin>", line 1, in <module>
+# AttributeError: 'Duck' object has no attribute '__name'
+```
+
+## 名前のマングリング（変形）の正体
+
+エラーメッセージを見ると、「`__name` という属性は存在しない」と言われています。
+実は、Pythonは完全に属性を隠したわけではなく、外部コードが偶然アクセスしてしまわないように **名前をマングリング（ぐちゃぐちゃに変形）** しているのです。
+
+Python内部では、`__属性名` は自動的に `_クラス名__属性名` という形にリネームされます。そのため、変形後の名前を知っていれば、無理やりアクセスすることは可能です。
+
+```python
+# マングリングされた名前に直接アクセスする（非推奨）
+print(fowl._Duck__name)
+# 出力: Donald
+```
+
+<Aside type="caution" title="保護のレベル">
+この仕組みは完全な保護（セキュリティ機能）ではありませんが、名前のマングリングによって「意図せぬ（あるいは意図した）属性への直接アクセス」をある程度防ぐという目的は十分に果たしてくれます。
+</Aside>

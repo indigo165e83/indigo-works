@@ -1,0 +1,65 @@
+---
+title: "6.13 コンポジション"
+description: "クラスの継承（is-a関係）ではなく、他のオブジェクトを部品として持つことで機能を組み立てる「コンポジション（has-a関係）」についての要約"
+sidebar:
+  order: 41
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+ここまでは、新しいクラスを作るときに「継承」を使ってきました。継承は「子クラスは親クラス**である（is-a）**」という関係が成り立つ場合に適したテクニックです。
+しかし、プログラミングをしていると、継承よりも**コンポジション**や**集約**と呼ばれる設計の方が理にかなっていることがよくあります。
+
+## コンポジション（has-a関係）とは
+
+コンポジションは、「あるオブジェクトが別のオブジェクトを**持っている（has-a）**」という関係を表します。
+
+アヒルを例に考えてみましょう。
+「アヒルは鳥である」という関係は継承（is-a）ですが、「アヒルはくちばしと、しっぽを持っている」という関係はコンポジション（has-a）です。しっぽはアヒルの「種類」ではなく、「一部（部品）」だからです。
+
+## コンポジションの実装例
+
+実際に、「くちばし（`Bill`）」と「しっぽ（`Tail`）」のオブジェクトを作り、それを新しい「アヒル（`Duck`）」オブジェクトの部品として持たせてみましょう。
+
+```python
+# 部品となるクラス1：くちばし
+class Bill():
+    def __init__(self, description):
+        self.description = description
+
+# 部品となるクラス2：しっぽ
+class Tail():
+    def __init__(self, length):
+        self.length = length
+
+# これらを持つクラス：アヒル
+class Duck():
+    def __init__(self, bill, tail):
+        # 渡されたオブジェクトを自分の属性として保持する
+        self.bill = bill
+        self.tail = tail
+
+    def about(self):
+        # 保持している部品（オブジェクト）の属性にアクセスする
+        print('This duck has a', self.bill.description, 'bill and a', self.tail.length, 'tail')
+```
+
+これらのクラスを使って、部品を組み立ててアヒルを完成させます。
+
+```python
+# まず部品となるオブジェクトを作成する
+tail = Tail('long')
+bill = Bill('wide orange')
+
+# 部品を渡して、アヒルオブジェクトを作成する
+duck = Duck(bill, tail)
+
+# 動作確認
+duck.about()
+# 出力: This duck has a wide orange bill and a long tail
+```
+
+<Aside type="tip" title="継承とコンポジションの使い分け">
+何でもかんでも継承を使って複雑な階層構造を作ろうとするのは、オブジェクト指向プログラミングにありがちな罠です。
+「〜は〜の一種である（is-a）」なら**継承**、「〜は〜を持っている、〜を部品として使っている（has-a）」なら**コンポジション**を使うのが、スッキリとした良い設計の基本です。
+</Aside>

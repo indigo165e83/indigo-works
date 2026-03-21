@@ -1,0 +1,118 @@
+---
+title: "6.8 プロパティによる属性値の取得、設定"
+description: "Pythonらしいゲッター・セッターの実装方法である「プロパティ」の定義方法と、そのメリット（計算された値、読み出し専用など）についての要約"
+sidebar:
+  order: 36
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+他のオブジェクト指向言語では、属性を非公開にして直接アクセスできないようにし、代わりに「ゲッター（取得用）」と「セッター（設定用）」と呼ばれるメソッドを書くことがよくあります。
+しかし、Pythonではすべての属性とメソッドが公開されているため、基本的にはゲッターやセッターをわざわざ書く必要はありません。
+
+それでも、属性への直接アクセスを避けたい場合や、値の取得・設定時に特定の処理を挟みたい場合には、Pythonらしい方法である **「プロパティ」** を使います。
+
+## `property()` 関数を使った定義
+
+まずは、`hidden_name` という属性を持つ `Duck` クラスを作り、通常のゲッターとセッターメソッドを定義してから、それをプロパティとして設定する方法を見てみましょう。
+
+```python
+class Duck():
+    def __init__(self, input_name):
+        self.hidden_name = input_name
+
+    def get_name(self):
+        print('inside the getter')
+        return self.hidden_name
+
+    def set_name(self, input_name):
+        print('inside the setter')
+        self.hidden_name = input_name
+
+    # ゲッターとセッターを name というプロパティとして定義
+    name = property(get_name, set_name)
+```
+
+このように定義すると、`name` 属性のようにアクセスするだけで、裏では自動的に `get_name()` や `set_name()` が呼び出されるようになります。
+
+```python
+fowl = Duck('Howard')
+
+# 属性のようにアクセスすると、ゲッターが呼ばれる
+print(fowl.name)
+# 出力: 
+# inside the getter
+# Howard
+
+# 属性のように代入すると、セッターが呼ばれる
+fowl.name = 'Daffy'
+# 出力: inside the setter
+```
+
+## デコレータを使った定義（推奨）
+
+プロパティは、**デコレータ**（`@` から始まるキーワード）を使うと、より簡潔で直感的に定義できます。
+
+* `@property`: ゲッターメソッドの直前に付けます。
+* `@プロパティ名.setter`: セッターメソッドの直前に付けます。
+
+```python
+class Duck():
+    def __init__(self, input_name):
+        self.hidden_name = input_name
+
+    # ゲッターの定義
+    @property
+    def name(self):
+        print('inside the getter')
+        return self.hidden_name
+
+    # セッターの定義（メソッド名はゲッターと同じにします）
+    @name.setter
+    def name(self, input_name):
+        print('inside the setter')
+        self.hidden_name = input_name
+```
+
+この書き方でも、先ほどと同様に `fowl.name` でゲッターやセッターが呼び出されます。
+
+## 計算されたプロパティと読み出し専用プロパティ
+
+プロパティの素晴らしい点は、単に値を返すだけでなく、**他の属性から計算された値**をプロパティとして提供できることです。
+また、セッター（`@プロパティ名.setter`）を定義しなければ、**読み出し専用**のプロパティを作ることができます。
+
+```python
+class Circle():
+    def __init__(self, radius):
+        # radius（半径）は通常の属性
+        self.radius = radius
+
+    # diameter（直径）は radius から計算されるプロパティ
+    @property
+    def diameter(self):
+        return 2 * self.radius
+```
+
+この `Circle` オブジェクトの動作を確認してみましょう。
+
+```python
+c = Circle(5)
+print(c.radius)   # 5
+print(c.diameter) # 10 (2 * 5 が計算されて返る)
+
+# 半径を変更すると、直径も連動して変わる
+c.radius = 7
+print(c.diameter) # 14
+```
+
+### 読み出し専用プロパティの保護
+`diameter` にはセッターが定義されていないため、外部から直接値を書き換えようとするとエラーになります。
+
+```python
+# c.diameter = 20
+# 出力結果（エラー）: AttributeError: can't set attribute
+```
+
+<Aside type="tip" title="プロパティの最大のメリット">
+属性への直接アクセスではなくプロパティを使う最大のメリットは、将来クラス内部の実装（変数の名前や計算方法など）を変更しても、クラスを呼び出す側のコード（`c.diameter` など）を一切書き換える必要がない点にあります。
+</Aside>

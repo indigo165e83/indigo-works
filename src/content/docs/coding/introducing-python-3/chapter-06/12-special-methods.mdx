@@ -1,0 +1,113 @@
+---
+title: "6.12 特殊メソッド"
+description: "Pythonの組み込み演算子や関数（==、+、print()など）に対する独自の振る舞いを定義できる「特殊メソッド（マジックメソッド）」についての要約"
+sidebar:
+  order: 40
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Pythonで `a = 3 + 8` と書いたとき、整数オブジェクトはどのようにして `+` の計算方法を知るのでしょうか。
+Pythonには、 **特殊メソッド（またはマジックメソッド）** と呼ばれる仕組みがあり、これを使うことで標準の演算子（`+` や `==` など）や組み込み関数に対する独自の動作を定義することができます。
+
+特殊メソッドの名前は、オブジェクトの初期化で使う `__init__()` と同じように、 **先頭と末尾がダブルアンダースコア（`__`）** になっています。
+
+## `__eq__()` による等価性テストのカスタマイズ
+
+例として、大文字と小文字を区別せずに2つの単語を比較する `Word` クラスを作ってみましょう。
+まずは独自の名前のメソッド（`equals`）で比較を実装してみます。
+
+```python
+class Word():
+    def __init__(self, text):
+        self.text = text
+        
+    # 独自メソッドで比較を実装
+    def equals(self, word2):
+        return self.text.lower() == word2.text.lower()
+
+first = Word('ha')
+second = Word('HA')
+
+# 呼び出し方
+print(first.equals(second)) # True
+```
+
+この比較を、Pythonの組み込み型と同じように `first == second` と書けるようにするには、メソッド名を `__eq__` に変更するだけです。
+
+```python
+class Word():
+    def __init__(self, text):
+        self.text = text
+        
+    # 特殊メソッド __eq__ に変更
+    def __eq__(self, word2):
+        return self.text.lower() == word2.text.lower()
+
+first = Word('ha')
+second = Word('HA')
+third = Word('eh')
+
+# == 演算子を使って比較できるようになる！
+print(first == second) # True
+print(first == third)  # False
+```
+
+## 主要な特殊メソッドの一覧
+
+### 比較のための特殊メソッド
+| メソッド | 引数 | 意味（演算子） |
+| :--- | :--- | :--- |
+| `__eq__` | `(self, other)` | `self == other` |
+| `__ne__` | `(self, other)` | `self != other` |
+| `__lt__` | `(self, other)` | `self < other` |
+| `__gt__` | `(self, other)` | `self > other` |
+| `__le__` | `(self, other)` | `self <= other` |
+| `__ge__` | `(self, other)` | `self >= other` |
+
+### 算術計算のための特殊メソッド
+| メソッド | 引数 | 意味（演算子） |
+| :--- | :--- | :--- |
+| `__add__` | `(self, other)` | `self + other` |
+| `__sub__` | `(self, other)` | `self - other` |
+| `__mul__` | `(self, other)` | `self * other` |
+| `__floordiv__`| `(self, other)` | `self // other` |
+| `__truediv__` | `(self, other)` | `self / other` |
+| `__mod__` | `(self, other)` | `self % other` |
+| `__pow__` | `(self, other)` | `self ** other` |
+
+### その他の特殊メソッド
+| メソッド | 引数 | 意味（組み込み関数） |
+| :--- | :--- | :--- |
+| `__str__` | `(self)` | `str(self)`、`print(self)` 用の文字列 |
+| `__repr__` | `(self)` | `repr(self)`、対話型インタープリタのエコー出力用 |
+| `__len__` | `(self)` | `len(self)` |
+
+## `__str__()` と `__repr__()` による文字列表現
+
+自分で定義したクラスのオブジェクトをそのまま `print()` すると、`<__main__.Word object at 0x...>` のような読みにくいデフォルトの文字列表現になってしまいます。
+表示を見やすくするために、`__str__()` と `__repr__()` を追加します。
+
+```python
+class Word():
+    def __init__(self, text):
+        self.text = text
+
+    # print() や str() に渡されたときに呼ばれる
+    def __str__(self):
+        return self.text
+
+    # インタープリタでのエコー出力などに使われる
+    def __repr__(self):
+        return 'Word("' + self.text + '")'
+
+first = Word('ha')
+
+# __str__ が使われる
+print(first) 
+# 出力: ha
+
+# 対話型インタープリタなどでオブジェクト名を直接評価した場合は __repr__ が使われる
+# >>> first
+# Word("ha")
+```

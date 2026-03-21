@@ -1,0 +1,89 @@
+---
+title: "6.11 ダックタイピング"
+description: "Pythonの柔軟なポリモーフィズムである「ダックタイピング」の概念と、クラスの継承関係に縛られずにオブジェクトを共通して扱う方法についての要約"
+sidebar:
+  order: 39
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Pythonは、クラスの種類に関わらず、異なるオブジェクトに対して同じ操作を適用できる「ポリモーフィズム（多態性、多様性）」の緩やかな実装を持っています。
+
+## 伝統的なポリモーフィズム
+
+まずは、オブジェクト指向言語における伝統的なポリモーフィズムを見てみましょう。
+同じ親クラス（`Quote`）を共有する3つのクラスを定義し、それぞれのクラスで `says()` メソッドが異なる記号（`.`、`?`、`!`）を返すようにします。
+
+```python
+# 親クラス
+class Quote():
+    def __init__(self, person, words):
+        self.person = person
+        self.words = words
+    def who(self):
+        return self.person
+    def says(self):
+        return self.words + '.'
+
+# 子クラス1: 疑問符を返す
+class QuestionQuote(Quote):
+    def says(self):
+        return self.words + '?'
+
+# 子クラス2: 感嘆符を返す
+class ExclamationQuote(Quote):
+    def says(self):
+        return self.words + '!'
+```
+
+これらのクラスからオブジェクトを作り、同じメソッドを呼び出すと、クラスごとに異なる動作（戻り値）を提供します。
+
+```python
+hunter = Quote('Elmer Fudd', "I'm hunting wabbits")
+print(hunter.who(), 'says:', hunter.says())
+# 出力: Elmer Fudd says: I'm hunting wabbits.
+
+hunted1 = QuestionQuote('Bugs Bunny', "What's up, doc")
+print(hunted1.who(), 'says:', hunted1.says())
+# 出力: Bugs Bunny says: What's up, doc?
+
+hunted2 = ExclamationQuote('Daffy Duck', "It's rabbit season")
+print(hunted2.who(), 'says:', hunted2.says())
+# 出力: Daffy Duck says: It's rabbit season!
+```
+
+## Pythonにおけるダックタイピング
+
+Pythonはそこからさらに一歩進んで、 **「必要なメソッド（この場合は `who()` と `says()`）を持ちさえすれば、継承関係が全くない無関係なオブジェクトであっても、同じように扱える」** という特徴があります。
+
+先ほどの猟師や獲物のクラスとは全く無関係な、小川のせせらぎを表す `BabblingBrook` クラスを作ってみましょう。
+
+```python
+# Quoteクラスを継承していない、全く無関係なクラス
+class BabblingBrook():
+    def who(self):
+        return 'Brook'
+    def says(self):
+        return 'Babble'
+
+brook = BabblingBrook()
+```
+
+ここで、どんなオブジェクトでも受け取って `who()` と `says()` を実行する共通の関数 `who_says()` を作ります。
+
+```python
+def who_says(obj):
+    print(obj.who(), 'says', obj.says())
+
+# Quoteの子孫オブジェクトを渡す
+who_says(hunter)  # Elmer Fudd says I'm hunting wabbits.
+who_says(hunted1) # Bugs Bunny says What's up, doc?
+
+# 全く無関係なBrookオブジェクトを渡しても、正常に動作する
+who_says(brook)   # Brook says Babble
+```
+
+<Aside type="note" title="ダックタイピングの由来">
+このような柔軟な動作は、プログラミング界隈の古いことわざにちなんで**ダックタイピング**と呼ばれます。
+「アヒルのように歩き、アヒルのようにクワッと鳴くなら、それはアヒルだ」。つまり、メソッドの中身やクラスの出自が何であれ、同じ名前のメソッドが呼べるなら同じ仲間として扱ってしまおう、という考え方です。
+</Aside>

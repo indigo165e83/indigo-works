@@ -1,0 +1,60 @@
+---
+title: "6.5 メソッドの追加"
+description: "親クラスから継承した機能に加え、子クラス独自の新しいメソッドを追加して機能を拡張する方法についての要約"
+sidebar:
+  order: 33
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+子クラスは、親クラスのメソッドをオーバーライド（上書き）するだけでなく、**親クラスにはなかった全く新しいメソッドを追加**することもできます。これにより、子クラスに独自の機能を持たせ、親クラスとの違い（個性）をはっきりとさせることができます。
+
+## 子クラスへの独自メソッドの追加
+
+前節の `Car` クラスと `Yugo` クラスの例を引き続き使用します。
+子クラスである `Yugo` クラスだけに、誰かに背中を押してもらうための `need_a_push()` という新しいメソッドを追加してみましょう。
+
+```python
+# 親クラス
+class Car():
+    def exclaim(self):
+        print("I'm a Car!")
+
+# 子クラス
+class Yugo(Car):
+    def exclaim(self):
+        print("I'm a Yugo! Much like a Car, but more Yugo-ish.")
+        
+    # Yugoクラス独自の新しいメソッドを追加
+    def need_a_push(self):
+        print("A little help here?")
+```
+
+## メソッドの呼び出しと親クラスとの違い
+
+それぞれのクラスからオブジェクトを作成し、新しく追加したメソッドを呼び出してみます。
+
+```python
+give_me_a_car = Car()
+give_me_a_yugo = Yugo()
+
+# Yugoオブジェクトは独自メソッドを呼び出せる
+give_me_a_yugo.need_a_push()
+# 出力: A little help here?
+```
+
+`Yugo` オブジェクトは、新しく追加された `need_a_push()` メソッドに正しく反応します。
+しかし、親である `Car` オブジェクトに対して同じメソッドを呼び出そうとするとどうなるでしょうか。
+
+```python
+# 汎用的なCarオブジェクトは、Yugo独自のメソッドを知らない
+give_me_a_car.need_a_push()
+
+# 出力結果（エラー）:
+# Traceback (most recent call last):
+#   File "<stdin>", line 1, in <module>
+# AttributeError: 'Car' object has no attribute 'need_a_push'
+```
+
+このように、汎用的な `Car` クラスには `need_a_push()` メソッドが存在しないため、エラー（`AttributeError`）になります。
+この機能追加によって、`Yugo` は `Car` にはできない独自の振る舞いができるようになり、両者の違いが明確になりました。

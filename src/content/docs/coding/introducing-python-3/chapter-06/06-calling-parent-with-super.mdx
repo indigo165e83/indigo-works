@@ -1,0 +1,62 @@
+---
+title: "6.6 superによる親への支援要請"
+description: "子クラスから親クラスのメソッドを明示的に呼び出すための super() の使い方と、その大きなメリットについての要約"
+sidebar:
+  order: 34
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+子クラスが親クラスのメソッドをオーバーライド（上書き）すると、親クラスの元のメソッドは自動的には呼び出されなくなります。しかし、子クラス独自の処理をしつつ、親クラスの元の機能も利用したい場合があります。
+そのようなときに活躍するのが **`super()`** 関数です。
+
+## `super()` を使った親メソッドの呼び出し
+
+例として、名前（`name`）を持つ親クラス `Person` と、それに加えて電子メールアドレス（`email`）を持つ子クラス `EmailPerson` を定義してみましょう。
+
+```python
+# 親クラス
+class Person():
+    def __init__(self, name):
+        self.name = name
+
+# 子クラス
+class EmailPerson(Person):
+    # email引数を追加した独自の __init__
+    def __init__(self, name, email):
+        # 1. 親クラス(Person)の __init__ を呼び出して name の設定を任せる
+        super().__init__(name)
+        
+        # 2. 子クラス(EmailPerson)独自の email の設定を行う
+        self.email = email
+```
+
+この子クラスの `__init__()` 内では、以下のような処理が行われています。
+
+1. `super()` が親クラスである `Person` の定義を取り出します。
+2. `super().__init__(name)` によって親の初期化メソッドが呼び出されます。このとき、`self` 引数（オブジェクト自身）の受け渡しはPythonが自動で処理してくれるため、プログラマーは必要な引数（ここでは `name`）だけを渡せば済みます。
+3. 最後に `self.email = email` で、`EmailPerson` 独自の属性を保存します。
+
+## オブジェクトの作成と確認
+
+実際に `EmailPerson` クラスからオブジェクトを作って、両方の属性にアクセスできるか確認してみます。
+
+```python
+bob = EmailPerson('Bob Frapples', 'bob@frapples.com')
+
+# 親クラスの __init__ で設定された属性
+print(bob.name)
+# 出力: Bob Frapples
+
+# 子クラスの __init__ で設定された属性
+print(bob.email)
+# 出力: bob@frapples.com
+```
+
+## なぜ `super()` を使うべきなのか？
+
+`EmailPerson` クラスの `__init__` の中で、`super()` を使わずに直接 `self.name = name` と書くことも可能です。
+しかし、あえて `super()` を使って親に仕事を任せることには大きなメリットがあります。
+
+それは、**将来もし親クラス (`Person`) の定義が変更されたとしても、`super()` を使っていればその変更が自動的に子クラス (`EmailPerson`) にも反映される**という点です。
+継承の利点を最大限に活かすために、子クラスが親クラスの助けを必要とする場合は `super()` を使うようにしましょう。
