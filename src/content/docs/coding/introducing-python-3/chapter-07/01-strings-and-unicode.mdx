@@ -1,0 +1,100 @@
+---
+title: "7.1 文字列とUnicode"
+description: "Python 3における文字列の扱い、Unicode文字の指定方法、およびUTF-8によるエンコードとデコードについての要約"
+sidebar:
+  order: 43
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+この章では、Pythonでデータを自在に操るためのテクニックを学びます。まずは、最も身近なデータである「文字列（テキストデータ）」について深く掘り下げていきましょう。
+
+## 7.1.1 Unicode
+
+かつてコンピュータの世界では、英語のアルファベットや数字、一部の記号しか扱えない「ASCII（アスキー）」という文字コードが使われていました。
+しかし、世界中の様々な言語（日本語やヨーロッパの言語など）や記号（絵文字など）を扱うためにはASCIIでは不十分です。そこで登場したのが、世界のすべての文字と記号に一意の番号を割り当てる国際標準**「Unicode（ユニコード）」**です。
+
+### Python 3のUnicode文字列
+
+Python 2では単なる「バイト列」と「Unicode文字列」が混在していましたが、**Python 3の文字列はすべてUnicode文字列**として扱われます。
+
+Pythonの文字列内で特定のUnicode文字を指定するには、いくつかの方法があります。
+
+1. **`\u` + 4桁の16進数**: 基本多言語面（一般的な文字）を指定します。
+2. **`\U` + 8桁の16進数**: より上位の面（絵文字など）を指定します。
+3. **`\N{name}`**: 標準のUnicode文字名を直接指定します。
+
+```python
+import unicodedata
+
+# 1. コードで指定（ユーロ記号）
+print('\u20ac') # €
+
+# 2. コードで指定（雪だるまマーク）
+print('\u2603') # ☃
+
+# 3. 名前で指定
+place = 'caf\N{LATIN SMALL LETTER E WITH ACUTE}'
+print(place) # café
+
+# unicodedataモジュールを使って、名前から文字を引くことも可能
+print(unicodedata.lookup('LATIN SMALL LETTER E WITH ACUTE')) # é
+```
+
+<Aside type="note" title="文字数のカウント">
+Pythonの `len()` 関数は、内部的なバイト数ではなく、**Unicodeの文字数**を正確に数えます。
+`len('\u2603')`（雪だるま）は `1` になります。
+</Aside>
+
+## UTF-8によるエンコードとデコード
+
+Pythonプログラムの内部ではUnicodeとして扱われますが、ファイルに保存したり、ネットワーク経由でデータをやり取りしたりする場合は、文字を「バイト列（0と1のデータ）」に変換する必要があります。
+この変換ルールとして最も広く使われているのが**UTF-8**です。
+
+### エンコーディング（文字列 $\rightarrow$ バイト列）
+文字列をバイト列に変換するには `encode()` メソッドを使います。
+
+```python
+snowman = '\u2603'
+print(len(snowman)) # 1文字
+
+# UTF-8でエンコードしてバイト列にする
+ds = snowman.encode('utf-8')
+
+print(ds) # b'\xe2\x98\x83' (bで始まるのはバイト列であることを示す)
+print(len(ds)) # 3バイト使われていることがわかる
+```
+
+もし、サポートされていないエンコーディング（例：ASCII）で変換しようとするとエラーになりますが、第2引数を指定することでエラーを回避（無視や置換）することもできます。
+
+```python
+# ASCIIでエンコードしようとするとエラーになる文字の場合
+# snowman.encode('ascii') -> UnicodeEncodeError
+
+# エラーを無視する
+print(snowman.encode('ascii', 'ignore')) # b''
+
+# '?' に置き換える
+print(snowman.encode('ascii', 'replace')) # b'?'
+```
+
+### デコーディング（バイト列 $\rightarrow$ 文字列）
+外部から取得したバイト列をPythonの文字列に戻すには `decode()` メソッドを使います。このとき、**エンコードされたときと同じ方式（UTF-8など）を指定**しなければ正しく復元できません。
+
+```python
+place = 'café'
+place_bytes = place.encode('utf-8')
+print(place_bytes) # b'caf\xc3\xa9'
+
+# 正しい方式（UTF-8）でデコード
+place2 = place_bytes.decode('utf-8')
+print(place2) # café
+
+# 間違った方式（ASCIIなど）でデコードしようとするとエラーや文字化けが起きる
+# place_bytes.decode('ascii') -> UnicodeDecodeError
+# place_bytes.decode('latin-1') -> 'cafÃO' (文字化け)
+```
+
+<Aside type="tip" title="UTF-8を使うべき理由">
+可能な限りUTF-8エンコーディングを使いましょう。すべてのUnicode文字を表現でき、世界中で標準的にサポートされているため、文字化けやエラーのトラブルを大幅に減らすことができます。
+</Aside>

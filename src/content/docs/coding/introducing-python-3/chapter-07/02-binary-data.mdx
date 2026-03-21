@@ -1,0 +1,101 @@
+---
+title: "7.2 バイナリデータ"
+description: "Pythonでのバイナリデータ処理の基礎（bytes、bytearray）、structやbinasciiを使ったデータの相互変換、およびビット演算子についての要約"
+sidebar:
+  order: 44
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+テキストデータでは難しい操作も、バイナリデータとして扱うことで効率よく行えることがあります。ファイル形式の解析やネットワークパケットの処理などを行うためには、Pythonでのバイナリデータ処理の基礎を知っておく必要があります。
+
+## 7.2.1 バイトとバイト列 (`bytes` と `bytearray`)
+
+Python 3には、0から255までの値を取る8ビット整数のシーケンス（データの並び）として、以下の2種類が用意されています。
+
+* **`bytes`**: イミュータブル（変更不可）。バイトのタプルのようなものです。
+* **`bytearray`**: ミュータブル（変更可能）。バイトのリストのようなものです。
+
+```python
+blist = [1, 2, 3, 255]
+
+# bytesの作成（イミュータブル）
+the_bytes = bytes(blist)
+print(the_bytes) # b'\x01\x02\x03\xff'
+
+# bytearrayの作成（ミュータブル）
+the_byte_array = bytearray(blist)
+print(the_byte_array) # bytearray(b'\x01\x02\x03\xff')
+```
+
+`b'...'` という表記は `bytes` 値を表します。Pythonは表示の際、有効なASCII文字に該当するバイトはそのまま文字として表示し、それ以外は `\x` に続く16進数で表示します。
+
+<Aside type="caution" title="ミュータブルとイミュータブルの違い">
+`bytes` の要素を後から書き換えようとするとエラー（`TypeError`）になりますが、`bytearray` なら書き換えが可能です。
+
+```python
+# the_bytes[1] = 127 # エラーになる
+
+the_byte_array[1] = 127 # bytearrayなら成功する
+print(the_byte_array) # bytearray(b'\x01\x7f\x03\xff')
+```
+</Aside>
+
+## 7.2.2 `struct` によるバイナリデータの変換
+
+標準ライブラリの `struct` モジュールを使うと、CやC++の構造体のようなバイナリデータと、Pythonのデータ構造を相互に変換できます。
+
+* **`unpack()`**: バイナリデータをPythonのデータ（タプル）に変換（抽出）します。
+* **`pack()`**: Pythonのデータをバイナリデータに変換します。
+
+例として、PNGファイルのバイナリデータの一部から、画像の幅と高さを抽出してみます。
+
+```python
+import struct
+
+# PNGファイルの先頭24バイトのデータ（ダミーデータ）
+data = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x9a\x00\x00\x00\x8d'
+
+# 16番目から24番目のバイトを抽出
+# '>LL' は「ビッグエンディアン(>)」の「符号なし長整数(L)が2つ」という意味
+width, height = struct.unpack('>LL', data[16:24])
+
+print('width:', width, 'height:', height)
+# 出力: width: 154 height: 141
+
+# 逆に、Pythonのデータをバイト列に変換する
+print(struct.pack('>L', 154))
+# 出力: b'\x00\x00\x00\x9a'
+```
+
+## 7.2.4 `binascii` によるバイト/文字列の変換
+
+`binascii` モジュールは、バイナリデータと16進文字列表現などを相互変換する際に便利です。Pythonのデフォルトの `\x` 混じりの表示ではなく、純粋な16進数の文字列として扱いたい場合に使用します。
+
+```python
+import binascii
+
+valid_png_header = b'\x89PNG\r\n\x1a\n'
+
+# バイト列を16進数の文字列に変換
+hex_str = binascii.hexlify(valid_png_header)
+print(hex_str) 
+# 出力: b'89504e470d0a1a0a'
+
+# 16進数の文字列をバイト列に戻す
+print(binascii.unhexlify(hex_str))
+# 出力: b'\x89PNG\r\n\x1a\n'
+```
+
+## 7.2.5 ビット演算子
+
+Pythonは、C言語とよく似たビットレベルの演算子を提供しています。これらは数値を2進数のビット列として操作します。
+
+| 演算子 | 意味 | 例 (`a=5(0b0101)`, `b=1(0b0001)`) | 結果 |
+| :--- | :--- | :--- | :--- |
+| `&` | AND（論理積） | `a & b` | `1` (`0b0001`) |
+| `|` | OR（論理和） | `a | b` | `5` (`0b0101`) |
+| `^` | 排他的OR（XOR） | `a ^ b` | `4` (`0b0100`) |
+| `~` | ビット反転（NOT）| `~a` | `-6` (符号も反転する) |
+| `<<` | 左シフト | `a << 1` | `10` (`0b1010`、2倍になる) |
+| `>>` | 右シフト | `a >> 1` | `2` (`0b0010`、1/2になる) |
