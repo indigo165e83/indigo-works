@@ -1,0 +1,140 @@
+---
+title: "4.7 関数"
+description: "Pythonの関数の定義方法、柔軟な引数の扱い方（args, kwargs）、クロージャ、ラムダ関数などについての要約"
+sidebar:
+  order: 17
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+プログラムが大きくなってきたら、再利用可能な部品にまとめる必要があります。その第一歩が「関数」です。
+関数は任意の型・個数の入力引数を取り、任意の型・個数の結果を出力することができます。
+
+## 関数の基本的な定義と呼び出し
+関数を定義するには、`def` と入力し、関数名、かっこ `()`、最後にコロン `:` を書きます。呼び出すときは関数名に続けてかっこを書きます。
+
+```python
+# 引数を持たないシンプルな関数
+def make_a_sound():
+    print('quack')
+
+make_a_sound() # 呼び出し（出力: quack）
+```
+
+結果を呼び出し元に返すには `return` を使います。明示的に `return` しない関数は、自動的に `None`（空の値を示す特殊な値）を返します。
+
+```python
+# 引数を取り、値を返す関数
+def echo(anything):
+    return anything + ' ' + anything
+
+result = echo('Hello')
+print(result) # Hello Hello
+```
+
+## 柔軟な引数の渡し方
+Pythonは引数の処理において非常に高い柔軟性を持っています。
+
+### 4.7.1 位置引数と 4.7.2 キーワード引数
+順番通りに渡すのが**位置引数**です。しかし、名前を指定する**キーワード引数**を使えば、順序を気にせずに渡すことができます。併用する場合は位置引数を先に書く必要があります。
+
+```python
+def menu(wine, entree, dessert):
+    return {'wine': wine, 'entree': entree, 'dessert': dessert}
+
+# 位置引数（順番通り）
+print(menu('chardonnay', 'chicken', 'cake'))
+
+# キーワード引数（順序は自由）
+print(menu(entree='beef', dessert='bagel', wine='bordeaux'))
+```
+
+### 4.7.3 デフォルト引数値の指定
+引数が渡されなかった場合に使われるデフォルト値を指定できます。
+
+```python
+def menu(wine, entree, dessert='pudding'):
+    return {'wine': wine, 'entree': entree, 'dessert': dessert}
+
+# dessertを省略するとデフォルトの 'pudding' になる
+print(menu('chardonnay', 'chicken'))
+```
+
+<Aside type="caution" title="デフォルト値の落とし穴">
+デフォルト引数は関数が「実行」されたときではなく「定義」されたときに一度だけ計算されます。そのため、**デフォルト値にリストや辞書などのミュータブルなデータ型を指定してはいけません**。代わりに `None` を使い、関数内で初期化するようにします。
+</Aside>
+
+### 4.7.4 `*args`（位置引数のタプル化）と 4.7.5 `**kwargs`（キーワード引数の辞書化）
+可変個の引数を受け取るために、アスタリスクを使います。
+* `*args`: 任意の数の位置引数を**タプル**としてまとめます。
+* `**kwargs`: 任意の数のキーワード引数を**辞書**としてまとめます。
+
+```python
+def print_args_and_kwargs(*args, **kwargs):
+    print('Positional (args):', args)
+    print('Keyword (kwargs):', kwargs)
+
+print_args_and_kwargs(1, 2, 3, a="apple", b="banana")
+# Positional (args): (1, 2, 3)
+# Keyword (kwargs): {'a': 'apple', 'b': 'banana'}
+```
+
+## 4.7.6 docstring（ドキュメンテーション文字列）
+関数本体の先頭に文字列を組み込むことで、ドキュメント（説明書）を付けることができます。これは `help(関数名)` で確認できます。
+
+```python
+def echo(anything):
+    '''echoは、与えられた入力引数を返す'''
+    return anything
+
+help(echo)
+```
+
+## 第一級オブジェクトとしての関数
+Pythonでは、関数も数値や文字列と同じ**一人前のオブジェクト**です。関数を変数に代入したり、別の関数の引数として渡したりできます。
+
+```python
+def answer():
+    print(42)
+
+def run_something(func):
+    func() # 渡された関数を実行する
+
+run_something(answer) # 42
+```
+
+### 4.7.8 関数内関数 と 4.7.9 クロージャ
+関数の内部で別の関数を定義できます。「クロージャ」とは、外側の関数から動的に生成され、その外側の変数の値を記憶している特殊な関数のことです。
+
+```python
+def knights2(saying):
+    def inner2():
+        return "We are the knights who say: '%s'" % saying
+    return inner2 # 関数を実行せず、関数自体を返す
+
+# sayingの値を覚えている2つの異なるクロージャを生成
+a = knights2('Duck')
+b = knights2('Hasenpfeffer')
+
+print(a()) # We are the knights who say: 'Duck'
+print(b()) # We are the knights who say: 'Hasenpfeffer'
+```
+
+### 4.7.10 無名関数: ラムダ関数
+`lambda` を使えば、ひとつの文で表現される名前のない関数を作ることができます。GUIのコールバックや、ちょっとした処理を他の関数に渡したいときに便利です。
+
+```python
+stairs = ['thud', 'meow', 'thud', 'hiss']
+
+def edit_story(words, func):
+    for word in words:
+        print(func(word))
+
+# lambda 引数: 戻り値の処理
+edit_story(stairs, lambda word: word.capitalize() + '!')
+
+# Thud!
+# Meow!
+# Thud!
+# Hiss!
+```

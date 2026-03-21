@@ -1,0 +1,79 @@
+---
+title: "4.10 名前空間とスコープ"
+description: "Pythonにおけるグローバル変数とローカル変数の違い、名前空間の仕組み、および特殊なシステム変数についての要約"
+sidebar:
+  order: 20
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Pythonでは、名前がどこで使われているかによって、参照できる対象が異なります。これを管理する仕組みが「名前空間（Namespace）」です。名前空間とは、特定の名前が一意に決まり、他の領域にある同じ名前とは無関係になる領域のことです。
+
+## グローバル変数とローカル変数
+
+プログラムのメイン部分は「グローバル名前空間」を定義し、そこで定義された変数は**グローバル変数**と呼ばれます。一方、各関数内には専用の「ローカル名前空間」があり、そこでの変数は**ローカル変数**となります。
+
+### グローバル変数へのアクセス
+関数内からグローバル変数の値を参照することはそのまま行えます。
+
+```python
+animal = 'fruitbat' # グローバル変数
+
+def print_global():
+    print('inside print_global:', animal)
+
+print_global() # inside print_global: fruitbat
+```
+
+### 関数内での値の書き換え（`global` キーワード）
+関数内でグローバル変数の値を書き換えようとすると、Pythonはそれを「新しいローカル変数」と見なしてしまい、エラーが発生したり意図しない挙動になったりします。グローバル変数を変更したい場合は、必ず `global` キーワードで明示する必要があります。
+
+```python
+animal = 'fruitbat'
+
+def change_and_print_global():
+    global animal # グローバル変数を使うことを明示
+    animal = 'wombat'
+    print('inside change_and_print_global:', animal)
+
+change_and_print_global()
+print(animal) # wombat (グローバル変数が書き換わっている)
+```
+
+## 名前空間の内容を確認する
+Pythonには名前空間の内容を辞書形式で確認するための関数が用意されています。
+
+* **`locals()`**: ローカル名前空間の内容を返す。
+* **`globals()`**: グローバル名前空間の内容を返す。
+
+```python
+animal = 'fruitbat'
+
+def change_local():
+    animal = 'wombat' # ローカル変数
+    print('locals:', locals())
+
+change_local()
+# locals: {'animal': 'wombat'}
+```
+
+## 4.10.1 特殊なシステム変数（`__`）
+Python自身が使用するために予約されている変数名は、先頭と末尾に2個ずつのアンダースコア（`__`）が付いています。これらは「ダンダー（double underscore）」と呼ばれ、自分で変数を作る際にはこの形式を避けるべきです。
+
+* **`__name__`**: 関数の名前が格納されています。メインプログラムとして実行されている場合は `'__main__'` になります。
+* **`__doc__`**: 関数のdocstring（説明文）が格納されています。
+
+```python
+def amazing():
+    '''これはすばらしい関数だ。'''
+    print('この関数の名前:', amazing.__name__)
+    print('docstring:', amazing.__doc__)
+
+amazing()
+# この関数の名前: amazing
+# docstring: これはすばらしい関数だ。
+```
+
+<Aside type="tip" title="名前空間の壁">
+基本的には、関数内のローカル変数は関数が終了すると消えてしまいます。プログラムを整理し、予期せぬバグを防ぐために、できるだけグローバル変数に頼らず、引数と戻り値を使ってデータをやり取りするのが良い設計です。
+</Aside>

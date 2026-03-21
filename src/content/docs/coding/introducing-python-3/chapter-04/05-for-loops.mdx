@@ -1,0 +1,123 @@
+---
+title: "4.5 forによる反復処理"
+description: "Pythonにおけるforループの基本、辞書の反復処理、break/continue/elseによる制御、およびzip()やrange()を使った便利な反復処理についての要約"
+sidebar:
+  order: 15
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Pythonでデータ構造の各要素を順番に処理したい場合は、`for` ループを使用します。
+Pythonの `for` ループは「イテレータ」という仕組みを使っており、データ構造のサイズや実装の詳細を知らなくても、要素を1つずつ簡単に取り出せるように設計されています。
+
+## `for` ループの基本
+
+リスト、文字列、タプル、辞書、集合などはすべて**「イテラブル（反復可能）」**なオブジェクトです。これらを `for` ループに渡すと、一度に1つずつ要素が取り出されます。
+
+### リストと文字列の反復処理
+
+```python
+# リストの反復処理
+rabbits = ['Flopsy', 'Mopsy', 'Cottontail', 'Peter']
+for rabbit in rabbits:
+    print(rabbit)
+
+# 文字列の反復処理（1文字ずつ取り出される）
+word = 'cat'
+for letter in word:
+    print(letter)
+```
+
+## 辞書の反復処理
+
+辞書を `for` ループで処理する場合、取得したい内容（キー、値、またはその両方）に応じていくつかの方法があります。
+
+```python
+accusation = {'room': 'ballroom', 'weapon': 'lead pipe', 'person': 'Col. Mustard'}
+
+# 1. キーの反復処理（デフォルト、または .keys() を使用）
+for card in accusation:
+    print(card)
+
+# 2. 値の反復処理（.values() を使用）
+for value in accusation.values():
+    print(value)
+
+# 3. キーと値のペアの反復処理（.items() を使用）
+# タプルのアンパックを使って、変数に同時に代入するのが一般的です
+for card, contents in accusation.items():
+    print('Card', card, 'has the contents', contents)
+```
+
+## ループの制御（`break`, `continue`, `else`）
+
+`while` ループと同様に、`for` ループでも `break`、`continue`、およびオプションの `else` が使えます。
+
+  * **`break`**: ループをただちに中止して抜け出します。
+  * **`continue`**: 残りの処理をスキップし、次のイテレーション（次の要素の処理）に進みます。
+  * **`else`**: `break` が一度も呼び出されず、ループが最後まで**正常に完了した場合にのみ**実行されます。
+
+```python
+cheeses = []
+
+# 何かを探すループの例
+for cheese in cheeses:
+    print('This shop has some lovely', cheese)
+    break  # チーズが見つかったら終了
+else:
+    # breakされなかった（=チーズが1つもなかった）場合に実行される
+    print('This is not much of a cheese shop, is it?')
+
+# 出力: This is not much of a cheese shop, is it?
+```
+
+## 便利な組み込み関数を使った反復処理
+
+### `zip()` を使った複数のシーケンスの並列処理
+
+`zip()` 関数を使えば、複数のリストやタプルなどを並列的に反復処理できます。`zip()` は、**一番短いシーケンスの要素が尽きた時点で自動的に終了**します。
+
+```python
+days = ['Monday', 'Tuesday', 'Wednesday']
+fruits = ['banana', 'orange', 'peach']
+drinks = ['coffee', 'tea', 'beer']
+desserts = ['tiramisu', 'ice cream', 'pie', 'pudding'] # これは4要素ある
+
+for day, fruit, drink, dessert in zip(days, fruits, drinks, desserts):
+    print(day, ": drink", drink, "- eat", fruit, "- enjoy", dessert)
+
+# 水曜日まで出力され、プリン(pudding)は無視される
+```
+
+\<Aside type="tip" title="zip()から辞書を作る"\>
+`zip()` の結果を `dict()` に渡すことで、2つのシーケンスから簡単に辞書を作成できます。
+
+```python
+english = ['Monday', 'Tuesday', 'Wednesday']
+french = ['Lundi', 'Mardi', 'Mercredi']
+
+# 英語をキー、フランス語を値とする辞書を作成
+dictionary = dict(zip(english, french))
+print(dictionary) # {'Monday': 'Lundi', 'Tuesday': 'Mardi', 'Wednesday': 'Mercredi'}
+```
+
+\</Aside\>
+
+### `range()` による数値シーケンスの生成
+
+特定の回数ループを回したい場合や、連番のリストを作りたい場合に便利なのが `range()` 関数です。
+`range(start, end, step)` の形式で指定し、スライスと同じように `end` の直前の値まで生成されます。事前に巨大なリストをメモリ上に作らないため、非常に効率的です。
+
+```python
+# 0から2までの範囲
+for x in range(0, 3):
+    print(x) # 0, 1, 2が出力される
+
+# 2から0へ逆順（ステップを-1にする）
+for x in range(2, -1, -1):
+    print(x) # 2, 1, 0が出力される
+
+# 0から10までの偶数（ステップを2にする）
+even_numbers = list(range(0, 11, 2))
+print(even_numbers) # [0, 2, 4, 6, 8, 10]
+```

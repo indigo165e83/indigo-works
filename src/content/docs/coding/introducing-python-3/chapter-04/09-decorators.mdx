@@ -1,0 +1,86 @@
+---
+title: "4.9 デコレータ"
+description: "ソースコードを書き換えずに既存の関数に機能を追加できる「デコレータ」の仕組みと使い方についての要約"
+sidebar:
+  order: 19
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+デコレータは、入力として関数をひとつ取り、別の関数を返す関数です。
+これを使えば、**既存の関数のソースコードを直接書き換えずに、新しい機能（デバッグ文の追加など）を付け加える**ことができます。
+
+## デコレータの仕組み
+デコレータを作成するには、これまでに学んだ「関数内関数」や「引数としての関数」、「`*args` / `**kwargs`」のテクニックを組み合わせます。
+
+例として、実行される関数名と引数を表示する `document_it` デコレータを見てみましょう。
+
+```python
+def document_it(func):
+    # 元の関数をラップする新しい関数を定義
+    def new_function(*args, **kwargs):
+        print('Running function:', func.__name__)
+        print('Positional arguments:', args)
+        print('Keyword arguments:', kwargs)
+        
+        # 本来の関数を実行
+        result = func(*args, **kwargs)
+        
+        print('Result:', result)
+        return result
+    
+    # 機能を拡張した新しい関数を返す
+    return new_function
+```
+
+## デコレータの使い方
+
+### 1. 手作業で適用する
+デコレータの戻り値（新しく作られた関数）を、変数に代入して呼び出します。
+
+```python
+def add_ints(a, b):
+    return a + b
+
+# デコレータを適用して新しい関数を作る
+cooler_add_ints = document_it(add_ints)
+
+# 新しい関数を実行
+cooler_add_ints(3, 5)
+```
+
+### 2. `@` 記法を使う（推奨）
+デコレートしたい関数の定義の直前に `@デコレータ名` を追加します。これがもっとも一般的で Python らしい書き方です。
+
+```python
+@document_it
+def add_ints(a, b):
+    return a + b
+
+add_ints(3, 5) # 自動的に拡張された機能が実行される
+```
+
+## 複数のデコレータを重ねる
+ひとつの関数に対して、デコレータを複数重ねて使うこともできます。
+この場合、**関数に近い方（下にある方）のデコレータから順番に実行**されます。
+
+```python
+def square_it(func):
+    def new_function(*args, **kwargs):
+        result = func(*args, **kwargs)
+        return result * result # 結果を自乗する
+    return new_function
+
+@document_it
+@square_it
+def add_ints(a, b):
+    return a + b
+
+print(add_ints(3, 5))
+# 1. square_itが実行される (3+5=8, 8*8=64)
+# 2. document_itがその結果(64)をレポートする
+```
+
+<Aside type="note" title="順序による違い">
+デコレータを重ねる順序を逆にすると、レポートされる内容（中間の手順）が変わります。例えば、自乗する前にレポートするか、自乗した後にレポートするかといった違いが生まれます。
+</Aside>

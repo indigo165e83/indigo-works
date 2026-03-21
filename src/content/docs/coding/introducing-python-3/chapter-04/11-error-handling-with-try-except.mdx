@@ -1,0 +1,63 @@
+---
+title: "4.11 エラー処理とtry、except"
+description: "Pythonにおける例外処理の基本構文、特定の例外型のキャッチ、および例外情報の取得方法についての要約"
+sidebar:
+  order: 21
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Pythonでは、エラーが発生したときに実行されるコードを「例外（Exception）」と呼びます。
+適切な例外ハンドラを用意せずにエラーが発生すると、Pythonはエラーメッセージを表示してプログラムを強制終了してしまいます。これを防ぎ、状況に応じて穏便に処理を継続させるのが例外処理の役割です。
+
+## `try` と `except` による基本構造
+
+例外が起きそうな場所を `try` ブロックで囲み、エラーが起きた時の処理を `except` ブロックに記述します。
+
+```python
+short_list = [1, 2, 3]
+position = 5
+
+try:
+    # エラーが起きる可能性があるコード
+    short_list[position]
+except:
+    # エラーが起きた時に実行されるコード
+    print('Need a position between 0 and', len(short_list)-1, 'but got', position)
+
+# 出力: Need a position between 0 and 2 but got 5
+```
+
+## 特定の例外をキャッチする
+
+引数なしの `except` はあらゆるエラーをキャッチしてしまいますが、特定の例外型を指定することで、エラーの種類に応じたきめ細やかな処理が可能になります。
+
+```python
+short_list = [1, 2, 3]
+while True:
+    value = input('Position [q to quit]? ')
+    if value == 'q':
+        break
+    try:
+        position = int(value)
+        print(short_list[position])
+    except IndexError as err:
+        # インデックス範囲外のエラーを個別にキャッチ
+        print('Bad index:', position)
+    except Exception as other:
+        # その他のあらゆる例外をキャッチし、詳細を表示
+        print('Something else broke:', other)
+```
+
+### 例外オブジェクトの取得
+`except 例外型 as 変数名` と記述することで、例外オブジェクト自体にアクセスし、システムが生成した詳細なエラーメッセージを取得できます。
+
+* **`IndexError`**: シーケンスに無効な位置を指定したときに発生します。
+* **`Exception`**: ほとんどの例外の親クラスであり、予期せぬエラーをまとめて拾うのに役立ちます。
+
+## 例外処理のバブルアップ
+ある関数内で例外が発生し、その関数内でキャッチされなかった場合、その例外は呼び出し元の関数（上位の関数）へと伝わっていきます（バブルアップ）。最終的にどこでもキャッチされなければ、プログラムは終了します。
+
+<Aside type="tip" title="グッドプラクティス">
+例外が起きそうな場所にはすべて例外処理を追加し、ユーザーに何が起きたのかを知らせるのが良いプログラミングとされています。問題を完全に解決できなくても、少なくとも状況を伝えて安全にプログラムを終了させることができます。
+</Aside>

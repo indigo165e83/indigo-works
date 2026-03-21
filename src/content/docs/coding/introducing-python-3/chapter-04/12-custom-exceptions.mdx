@@ -1,0 +1,62 @@
+---
+title: "4.12 独自例外の作成"
+description: "Pythonで独自の例外型を定義する方法と、raiseキーワードを使った例外の発生、および例外オブジェクトからの情報取得についての要約"
+sidebar:
+  order: 22
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Pythonの標準ライブラリには多くの例外型が用意されていますが、自分のプログラム内で発生する特殊な状況に対処するために、**独自の例外型**を定義することも可能です。
+
+## 独自例外の定義方法
+
+例外はクラスとして定義され、基本的には標準の `Exception` クラスを継承して作成します。
+
+```python
+# Exceptionクラスを継承して独自の例外クラスを作成
+class UppercaseException(Exception):
+    pass
+```
+
+この例では、クラスの中身を空にするための `pass` 文を使用していますが、これだけで `Exception` クラスの振る舞い（エラーメッセージの表示など）を引き継ぐことができます。
+
+## 例外の発生（`raise`）
+
+定義した独自の例外を発生させるには、`raise` 文を使用します。
+
+```python
+words = ['eeenie', 'meenie', 'miny', 'MO']
+
+for word in words:
+    if word.isupper():
+        # 文字列がすべて大文字の場合に独自例外を発生させる
+        raise UppercaseException(word)
+
+# 出力結果（例外発生時）:
+# Traceback (most recent call last):
+#   ...
+# __main__.UppercaseException: MO
+```
+
+## 例外情報の取得
+
+`except 独自例外型 as 変数名` と記述することで、例外オブジェクト自体にアクセスし、例外発生時に渡された情報を表示・活用することができます。
+
+```python
+class OopsException(Exception):
+    pass
+
+try:
+    # 例外を発生させ、引数として情報を渡す
+    raise OopsException('panic')
+except OopsException as exc:
+    # 変数excを通じて情報を取得し、表示する
+    print(exc)
+
+# 出力: panic
+```
+
+<Aside type="note" title="クラスについて">
+独自の例外を定義するには「クラス」を使って新しいオブジェクト型を作る必要があります。クラスの詳しい仕組みについては、本書の第6章で詳しく解説されます。
+</Aside>

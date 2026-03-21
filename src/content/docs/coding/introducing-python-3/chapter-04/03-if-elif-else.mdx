@@ -1,0 +1,119 @@
+---
+title: "4.3 if、elif、elseによる比較"
+description: "Pythonにおける条件分岐（if, elif, else）の基本構文、比較・ブール演算子の使い方、および真偽値の判定条件（Trueとは何か）についての要約"
+sidebar:
+  order: 13
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+プログラムの中で、データの内容をチェックして異なる処理を実行したい場合には、条件分岐を使います。
+Pythonの条件分岐は、英語のように読みやすく、かつインデントによって構造を明確にするという特徴があります。
+
+## `if`、`elif`、`else` の基本構文
+
+条件分岐には以下のキーワードを使用します。
+
+* **`if`**: 最初に条件をテストします。
+* **`elif`** (`else if` の意味): 最初の条件が偽だった場合に、別の条件をテストします（複数記述可能）。
+* **`else`**: すべての条件が偽だった場合に実行される処理を記述します。
+
+<Aside type="caution" title="Pythonならではの構文ルール">
+他の多くの言語と異なり、条件式を囲むカッコ `()` は不要です。
+また、条件式の末尾には必ず **コロン `:`** をつける必要があります。
+条件のもとで実行される処理は、**同じ深さのインデント（PEP 8ではスペース4つを推奨）**で揃える必要があります。
+</Aside>
+
+```python
+color = "puce"
+
+if color == "red":
+    print("It's a tomato")
+elif color == "green":
+    print("It's a green pepper")
+elif color == "bee purple":
+    print("I don't know what it is, but only bees can see it")
+else:
+    print("I've never heard of the color", color)
+
+# 出力: I've never heard of the color puce
+```
+
+### 条件分岐の入れ子（ネスト）
+`if` の中にさらに `if` を書く（入れ子にする）こともできます。インデントの深さによって、どの条件に対応する処理かが決まります。
+
+```python
+furry = True
+small = True
+
+if furry:
+    if small:
+        print("It's a cat.")
+    else:
+        print("It's a bear!")
+else:
+    if small:
+        print("It's a skink!")
+    else:
+        print("It's a human. Or a hairless bear.")
+
+# 出力: It's a cat.
+```
+
+## 比較演算子とブール演算子
+
+### 比較演算子
+Pythonには以下の比較演算子が用意されており、結果として `True` または `False` を返します。
+
+* `==` : 等しい（代入の `=` と混同しないよう注意）
+* `!=` : 等しくない
+* `<` : より小さい
+* `<=` : 以下
+* `>` : より大きい
+* `>=` : 以上
+* `in` : 要素になっている（文字列やリストの中に特定の値が含まれているか）
+
+### ブール演算子（`and`, `or`, `not`）
+複数の比較を同時に行う場合は、ブール演算子を使用します。
+
+```python
+x = 7
+
+print(5 < x and x < 10) # True (両方の条件を満たす)
+print(5 < x or x < 10)  # True (どちらか一方を満たす)
+print(5 < x and not x > 10) # True (notで条件を反転)
+```
+
+<Aside type="tip" title="Pythonの便利な比較記法">
+Pythonでは、`5 < x and x < 10` のような複数の比較を、数学の数式のようにスマートに繋げて書くことができます。
+
+```python
+x = 7
+print(5 < x < 10) # True
+```
+</Aside>
+
+## 4.3.1 Trueとは何か（Falseと見なされる値）
+
+条件式の対象がブール値（`True` / `False`）でなくても、Pythonは暗黙的にそれを「真」か「偽」か判断します。
+以下の値はすべて **`False`** と見なされます。
+
+* ブール値の `False`
+* `None` (null値)
+* ゼロの数値: `0` (整数), `0.0` (浮動小数点数)
+* 空のシーケンスやコレクション: `''` (空文字列), `[]` (空リスト), `()` (空タプル), `{}` (空辞書), `set()` (空集合)
+
+**上記以外のものは、すべて `True` と見なされます**。
+これを利用すると、「データ構造が空でないか」を非常にシンプルにチェックできます。
+
+```python
+some_list = []
+
+# リストが空（Falseと見なされる）なので、elseの処理が実行される
+if some_list:
+    print("There's something in here")
+else:
+    print("Hey, it's empty!")
+
+# 出力: Hey, it's empty!
+```
