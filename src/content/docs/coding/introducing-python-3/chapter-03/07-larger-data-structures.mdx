@@ -1,0 +1,70 @@
+---
+title: "3.7 もっと大きいデータ構造"
+description: "Pythonの基本データ構造（リスト、タプル、辞書など）を組み合わせて、より複雑で大きなデータ構造を作成する方法と、その際の制限についての要約"
+sidebar:
+  order: 10
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+ここまで学んできた組み込みデータ構造（リスト、タプル、集合、辞書）を組み合わせれば、もっと大きくて複雑な独自のデータ構造を作ることができます。
+
+## データ構造の組み合わせ例
+
+まずは、部品となる3種類のリストを用意します。
+
+```python
+marxes = ['Groucho', 'Chico', 'Harpo']
+pythons = ['Chapman', 'Cleese', 'Gilliam', 'Jones', 'Palin']
+stooges = ['Moe', 'Curly', 'Larry']
+```
+
+### リストのタプル
+個々のリストを要素とするタプルを作ることができます。
+
+```python
+tuple_of_lists = (marxes, pythons, stooges)
+
+print(tuple_of_lists)
+# (['Groucho', 'Chico', 'Harpo'], ['Chapman', 'Cleese', 'Gilliam', 'Jones', 'Palin'], ['Moe', 'Curly', 'Larry'])
+```
+
+### リストのリスト
+3つのリストを要素として含む、大きなリストを作ることもできます。
+
+```python
+list_of_lists = [marxes, pythons, stooges]
+
+print(list_of_lists)
+# [['Groucho', 'Chico', 'Harpo'], ['Chapman', 'Cleese', 'Gilliam', 'Jones', 'Palin'], ['Moe', 'Curly', 'Larry']]
+```
+
+### リストの辞書
+キーとしてグループの名前（文字列）を使い、値としてメンバーのリストを使う辞書を作ることもできます。
+
+```python
+dict_of_lists = {'Marxes': marxes, 'Pythons': pythons, 'Stooges': stooges}
+
+print(dict_of_lists)
+# {'Stooges': ['Moe', 'Curly', 'Larry'], 'Marxes': ['Groucho', 'Chico', 'Harpo'], 'Pythons': ['Chapman', 'Cleese', 'Gilliam', 'Jones', 'Palin']}
+```
+
+## データ構造を組み合わせる際の制限
+
+複雑なデータ構造を作る際、制限となるのは**データ型自体の性質**です。
+
+たとえば、**辞書のキーはイミュータブル（変更不可）でなければならない**という厳格なルールがあります。
+そのため、ミュータブルなデータ構造である「リスト」「辞書」「集合」は、別の辞書のキーにはなれません。
+
+しかし、**タプルはイミュータブルなので、辞書のキーになれます**。
+これを利用すると、たとえばGPS座標（緯度、経度、高度のタプル）をインデックスとした辞書を作ることができます。
+
+```python
+# タプルをキーにした辞書の例
+houses = {
+    (44.79, -93.14, 285): 'My House',
+    (38.89, -77.03, 13): 'The White House'
+}
+
+print(houses[(44.79, -93.14, 285)]) # 'My House'
+```

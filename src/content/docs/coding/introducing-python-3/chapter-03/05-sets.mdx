@@ -1,0 +1,122 @@
+---
+title: "3.5 集合"
+description: "Pythonの集合（set）の基本概念と、作成方法、および和集合・積集合などの強力な集合演算についての要約"
+sidebar:
+  order: 8
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+集合（セット）は、値を放り出してキーだけを残した辞書のようなデータ構造です。辞書のキーと同様に、 **個々の要素は一意（重複がない）** でなければなりません。
+集合は、「何かがあるかどうかだけがわかればよく、ほかのことは知らなくてもよい」ときに非常に便利です。キーになんらかの情報を値として追加したい場合には、辞書を使います。
+
+## 集合の作成と変換
+
+### `set()` や `{}` による作成
+集合を作るときには、`set()` 関数を使うか、1個以上のカンマ区切りの値を波かっこ（`{}`）で囲みます。辞書のキーと同様に、集合の要素に順序はありません。
+
+<Aside type="caution" title="空集合の作成に関する注意点">
+`[]` を使えば空リストが作れるので、`{}` を使えば空集合を作れそうな気がするかもしれませんが、実際には `{}` で作られるのは「空辞書」です。空の集合を作る場合は、必ず `set()` を使用します。
+</Aside>
+
+```python
+# 空集合の作成
+empty_set = set()
+print(empty_set) # set()
+
+# 波かっこを使った作成
+even_numbers = {0, 2, 4, 6, 8}
+print(even_numbers) # {0, 2, 4, 6, 8} (順序は保証されません)
+```
+
+### 他のデータ型から集合への変換
+リスト、文字列、タプル、辞書から、`set()` 関数を使って重複する値を取り除き、集合を作ることができます。
+
+```python
+# 文字列からの変換（重複する 'e' と 't' がひとつにまとめられます）
+print(set('letters')) # {'l', 'e', 't', 'r', 's'}
+
+# リストからの変換
+print(set(['Dasher', 'Dancer', 'Prancer', 'Mason-Dixon']))
+
+# 辞書からの変換（キーだけが抽出されます）
+print(set({'apple': 'red', 'orange': 'orange', 'cherry': 'red'})) # {'apple', 'cherry', 'orange'}
+```
+
+## 値の有無のテスト（`in`）
+集合の用途としてもっとも一般的なのが、`in` を使った値の有無のテストです。
+
+```python
+drinks = {
+    'martini': {'vodka', 'vermouth'},
+    'black russian': {'vodka', 'kahlua'},
+    'white russian': {'cream', 'kahlua', 'vodka'},
+    'manhattan': {'rye', 'vermouth', 'bitters'},
+    'screwdriver': {'orange juice', 'vodka'}
+}
+
+# ウォッカが含まれているカクテルを探す
+for name, contents in drinks.items():
+    if 'vodka' in contents:
+        print(name)
+```
+
+## 強力な集合演算（組み合わせ）
+数学で学ぶ「集合理論」の概念（和集合、積集合など）を、専用の演算子や関数で簡単に計算できます。
+
+```python
+a = {1, 2}
+b = {2, 3}
+```
+
+### 積集合（Intersection）
+両方の集合に共通して含まれる要素の集合です。`&` 演算子か `intersection()` 関数を使います。
+
+```python
+print(a & b)               # {2}
+print(a.intersection(b))   # {2}
+```
+
+### 和集合（Union）
+少なくともどちらか一方の集合に含まれている要素の集合です。`|` 演算子か `union()` 関数を使います。
+
+```python
+print(a | b)         # {1, 2, 3}
+print(a.union(b))    # {1, 2, 3}
+```
+
+### 差集合（Difference）
+第1の集合には含まれているが、第2の集合には含まれていない要素の集合です。`-` 演算子か `difference()` 関数を使います。
+
+```python
+print(a - b)              # {1}
+print(a.difference(b))    # {1}
+```
+
+### 排他的OR / 対称差（Symmetric Difference）
+どちらか片方にだけ含まれており、両方には共通していない要素の集合です。`^` 演算子か `symmetric_difference()` 関数を使います。
+
+```python
+print(a ^ b)                        # {1, 3}
+print(a.symmetric_difference(b))    # {1, 3}
+```
+
+### 部分集合（Subset）と上位集合（Superset）
+ある集合が、別の集合に完全に含まれているか（部分集合）、あるいは完全に含んでいるか（上位集合）を調べます。
+
+* **部分集合**: `<=` または `issubset()`。
+* **真部分集合**: `<` （第2の集合が、第1の集合のすべての要素に加えて別の要素も持っている状態）。
+* **上位集合**: `>=` または `issuperset()`。
+* **真上位集合**: `>`。
+
+```python
+bruss = {'kahlua', 'vodka'}
+wruss = {'cream', 'kahlua', 'vodka'}
+
+# 部分集合の確認
+print(bruss <= wruss) # True (ブラック・ルシアンの材料はすべてホワイト・ルシアンに含まれる)
+print(bruss < wruss)  # True (クリームという追加要素があるので真部分集合でもある)
+
+# 上位集合の確認
+print(wruss >= bruss) # True
+```

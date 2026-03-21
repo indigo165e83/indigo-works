@@ -1,0 +1,78 @@
+---
+title: "3.3 タプル"
+description: "Pythonのタプルの作成方法、アンパック（展開）、およびリストと比較した際のメリットについての要約"
+sidebar:
+  order: 6
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+タプルは、リストと同様に任意の要素を集めたシーケンスです。リストとは異なり、 **タプルはイミュータブル（変更不可）** であるため、定義した後に要素を追加、削除、変更することはできません。いわば「定数リスト」のようなデータ構造です。
+
+## タプルの作成
+
+### `()` やカンマを使った作成
+空のタプルは `()` を使って作成します。1つ以上の要素を持つタプルを作る場合、タプルを定義しているのは実際にはかっこではなく「カンマ」です。要素全体をかっこで囲むのは任意ですが、囲むことでタプルであることが分かりやすくなります。
+
+<Aside type="caution" title="1要素のタプルの注意点">
+要素が1つだけのタプルを作成する場合は、必ず**末尾にカンマを付ける**必要があります。
+</Aside>
+
+```python
+# 空のタプル
+empty_tuple = ()
+
+# 1要素のタプル（末尾のカンマが必須）
+one_marx = 'Groucho',
+print(one_marx) # ('Groucho',)
+
+# 複数要素のタプル（カンマで区切る）
+marx_tuple = 'Groucho', 'Chico', 'Harpo'
+
+# かっこで囲む（一般的な書き方）
+marx_tuple_with_parens = ('Groucho', 'Chico', 'Harpo')
+```
+
+### `tuple()` による変換
+`tuple()` 変換関数を使えば、リストなど他のシーケンスからタプルを作成することができます。
+
+```python
+marx_list = ['Groucho', 'Chico', 'Harpo']
+print(tuple(marx_list)) # ('Groucho', 'Chico', 'Harpo')
+```
+
+## タプルならではの便利な機能
+
+### タプルのアンパック
+タプルを使うと、一度に複数の変数へ値を代入することができます。これは「タプルのアンパック」と呼ばれます。
+
+```python
+marx_tuple = ('Groucho', 'Chico', 'Harpo')
+a, b, c = marx_tuple
+
+print(a) # Groucho
+print(b) # Chico
+print(c) # Harpo
+```
+
+### 変数の値の交換（スワップ）
+他言語では一時変数（tempなど）が必要になる変数の値の交換も、タプルを使えば1行でシンプルに記述できます。
+
+```python
+password = 'swordfish'
+icecream = 'tuttifrutti'
+
+# 一時変数を使わずに値を交換
+password, icecream = icecream, password
+
+print(password) # tuttifrutti
+print(icecream) # swordfish
+```
+
+## タプルとリストの比較
+作成後に書き換えられないため、タプルには `append()` や `insert()` といった関数がありません。それでもリストの代わりにタプルを使うべき理由（メリット）には、以下のようなものがあります。
+
+* **消費スペースが小さい**: リストよりもメモリの消費が少なくなります。
+* **安全性が高い**: 誤って要素を書き換えてしまう危険がありません。
+* **辞書のキーとして使える**: イミュータブルであるため、辞書のキーとして利用できます（リストは不可）。
+* **関数の引数**: 関数の引数はタプルとして渡されます。

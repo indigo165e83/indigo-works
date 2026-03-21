@@ -1,0 +1,134 @@
+---
+title: "3.4 辞書"
+description: "Pythonの辞書（dict）の基本概念と、作成、要素の追加・変更、削除、取得などの各種操作メソッドについての要約"
+sidebar:
+  order: 7
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+辞書はリストに似ていますが、要素の順序が管理されていないため、要素を選択するときに0や1などのオフセット（インデックス）は使いません。代わりに、個々の値に **一意なキー（key）** を与えます。  
+キーには文字列が使われることが多いですが、Pythonのイミュータブル（変更不可）な型であれば何でもキーにすることができます。辞書自体はミュータブル（変更可能）なので、要素の追加・削除・変更が可能です。
+
+<Aside type="note" title="他の言語での呼び名">
+他の言語では、辞書は連想配列、ハッシュ、ハッシュマップなどと呼ばれています。Pythonでは「dict」と呼ぶこともあります。
+</Aside>
+
+## 辞書の作成と変換
+
+### `{}` による作成
+辞書を作るには、`key: value` のペアをカンマで区切って並べ、全体を波かっこ（`{}`）で囲みます。
+
+```python
+# 空辞書の作成
+empty_dict = {}
+
+# キーと値を持つ辞書の作成
+bierce = {
+    "day": "A period of twenty-four hours, mostly misspent",
+    "positive": "Mistaken at the top of one's voice",
+    "misfortune": "The kind of fortune that never misses",
+}
+```
+
+### `dict()` を使った変換
+`dict()` 関数を使えば、2つの値のシーケンス（例：リストのリスト、タプルのリストなど）を辞書に変換できます。シーケンスの先頭要素がキー、第2要素が値になります。
+
+```python
+# 2要素のリストのリストから変換
+lol = [['a', 'b'], ['c', 'd'], ['e', 'f']]
+print(dict(lol)) # {'a': 'b', 'c': 'd', 'e': 'f'}
+
+# 2文字の文字列のリストからも変換可能
+los = ['ab', 'cd', 'ef']
+print(dict(los)) # {'a': 'b', 'c': 'd', 'e': 'f'}
+```
+
+## 要素の追加、変更、結合
+
+### `[key]` による追加・変更
+キーを使って要素を参照し、値を代入することで追加や変更ができます。すでにキーが存在する場合は値が上書きされ、存在しない場合は新しい要素として追加されます。辞書のキーは一意でなければなりません。
+
+```python
+pythons = {
+    'Chapman': 'Graham',
+    'Cleese': 'John',
+}
+
+# 新しい要素の追加
+pythons['Idle'] = 'Eric'
+
+# 既存要素の変更
+pythons['Cleese'] = 'John (John Cleese)'
+```
+
+### `update()` による結合
+`update()` 関数を使うと、別の辞書のキーと値をまとめてコピーして結合できます。同じキーが存在する場合は、後から結合した辞書の値で上書きされます。
+
+```python
+first = {'a': 1, 'b': 2}
+second = {'b': 'platypus', 'c': 3}
+first.update(second)
+
+print(first) # {'a': 1, 'b': 'platypus', 'c': 3}
+```
+
+## 要素の取得
+
+### `[key]` と `get()` による値の取得
+キーを指定して対応する値を取得できます。ただし、存在しないキーを `[key]` で指定すると例外（KeyError）が発生します。
+例外を避けるためには、`in` でキーの有無をテストするか、`get()` 関数を使用します。`get()` はキーがない場合に `None` や指定したデフォルト値を返します。
+
+```python
+pythons = {'Cleese': 'John', 'Palin': 'Michael'}
+
+# in を使ったテスト
+print('Cleese' in pythons) # True
+print('Marx' in pythons)   # False
+
+# get() による安全な取得
+print(pythons.get('Cleese'))             # 'John'
+print(pythons.get('Marx'))               # None
+print(pythons.get('Marx', 'Not found'))  # 'Not found' (デフォルト値)
+```
+
+### キー、値、ペアの一括取得
+* **`keys()`**: すべてのキーを取得します。
+* **`values()`**: すべての値を取得します。
+* **`items()`**: すべてのキー/値ペアをタプルとして取得します。
+
+```python
+signals = {'green': 'go', 'yellow': 'go faster', 'red': 'stop'}
+
+# Python 3では、通常のリストにするには list() で変換が必要です
+print(list(signals.keys()))   # ['green', 'yellow', 'red']
+print(list(signals.values())) # ['go', 'go faster', 'stop']
+print(list(signals.items()))  # [('green', 'go'), ('yellow', 'go faster'), ('red', 'stop')]
+```
+
+## 要素の削除
+
+* **`del`**: キーを指定して特定の要素を削除します。
+* **`clear()`**: 辞書からすべてのキーと値を削除し、空にします。
+
+```python
+pythons = {'Cleese': 'John', 'Marx': 'Groucho'}
+
+# 特定の要素を削除
+del pythons['Marx']
+print(pythons) # {'Cleese': 'John'}
+
+# すべての要素を削除
+pythons.clear() # または pythons = {}
+print(pythons) # {}
+```
+
+## 代入とコピー
+リストと同様に、辞書も `=` で別の変数に代入すると同じオブジェクトへの参照になります。独立したコピーを作りたい場合は `copy()` 関数を使います。
+
+```python
+signals = {'green': 'go', 'red': 'stop'}
+
+# 独立したコピーの作成
+original_signals = signals.copy()
+```

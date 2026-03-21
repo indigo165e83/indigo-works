@@ -1,0 +1,158 @@
+---
+title: "3.2 リスト"
+description: "Pythonのリストの作成、要素の取得・変更、追加・削除、その他の便利な操作メソッドについての要約"
+sidebar:
+  order: 5
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+リストは、要素を順番に管理したいとき、特に順序と内容が変わる場合があるときに向いているデータ構造です。文字列やタプルとは異なり、**リストはミュータブル（変更可能）**であり、新しい要素を追加したり、既存の要素を削除・書き換えたりすることができます。また、リスト内では同じ値が複数回登場しても構いません。
+
+## リストの作成と変換
+
+### `[]` または `list()` による作成
+リストは、0個以上の要素をそれぞれカンマで区切り、全体を角かっこ（`[]`）で囲んで作ります。また、`list()`関数を使って空リストを作ることもできます。
+
+```python
+empty_list = []
+weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+another_empty_list = list()
+```
+
+### 他のデータ型からの変換
+`list()`関数を使えば、文字列やタプルなどの他のデータ型をリストに変換できます。また、文字列の`split()`関数を使うと、特定のセパレータで文字列を分割してリスト化できます。
+
+```python
+# 文字列から文字のリストへ変換
+print(list('cat')) # ['c', 'a', 't']
+
+# タプルからリストへ変換
+a_tuple = ('ready', 'fire', 'aim')
+print(list(a_tuple)) # ['ready', 'fire', 'aim']
+
+# 文字列の分割
+birthday = '1/6/1952'
+print(birthday.split('/')) # ['1', '6', '1952']
+```
+
+## 要素の取得とスライス
+
+### オフセットによる取得とリストのリスト
+文字列と同様に、オフセット（インデックス）を指定して個々の要素を取り出せます。負のインデックスを使えば末尾から逆算できます。また、リストの中にリストを含めることも可能で、その場合は複数の角かっこを繋げて要素にアクセスします。
+
+```python
+marxes = ['Groucho', 'Chico', 'Harpo']
+print(marxes[0])  # Groucho
+print(marxes[-1]) # Harpo
+
+# リストのリスト
+small_birds = ['hummingbird', 'finch']
+all_birds = [small_birds, 'macaw']
+print(all_birds[0][1]) # finch (small_birdsの2番目の要素)
+```
+
+### スライスによるサブシーケンスの取得
+`[start:end:step]`の形式でスライスを使い、リストの一部を取り出すことができます。リストのスライスで得られる結果もリストです。
+
+```python
+marxes = ['Groucho', 'Chico', 'Harpo']
+print(marxes[0:2])  # ['Groucho', 'Chico']
+print(marxes[::-1]) # ['Harpo', 'Chico', 'Groucho'] (逆順にするテクニック)
+```
+
+## 要素の変更と追加
+
+### 要素の書き換え
+オフセットでリスト要素を指定し、新しい値を代入することで要素を書き換えられます。
+
+```python
+marxes = ['Groucho', 'Chico', 'Harpo']
+marxes[2] = 'Wanda'
+print(marxes) # ['Groucho', 'Chico', 'Wanda']
+```
+
+### `append()`, `extend()`, `insert()`
+* **`append()`**: リストの末尾に要素を1つ追加します。
+* **`extend()` または `+=`**: 別のリストの要素を結合します。
+* **`insert()`**: 指定したオフセットの位置に要素を追加します。
+
+```python
+marxes = ['Groucho', 'Chico', 'Harpo']
+
+# 末尾に追加
+marxes.append('Zeppo')
+
+# リストの結合
+others = ['Gummo', 'Karl']
+marxes.extend(others) # marxes += others と同じ
+
+# 指定位置に挿入
+marxes.insert(3, 'Gummo') 
+```
+
+## 要素の削除
+
+不要になった要素を削除するには、用途に合わせて複数の方法があります。
+
+* **`del`**: オフセットを指定して削除するPythonの文です。
+* **`remove()`**: 要素の値を指定して削除します。
+* **`pop()`**: 要素を取り出し、同時にリストから削除します。引数なしで末尾(`-1`)、オフセット指定で任意の位置の要素を返します。
+
+```python
+marxes = ['Groucho', 'Chico', 'Harpo', 'Gummo', 'Zeppo']
+
+del marxes[-1]          # 'Zeppo'を削除
+marxes.remove('Gummo')  # 値が'Gummo'の要素を削除
+popped = marxes.pop(1)  # 'Chico'を取り出して削除し、変数に代入
+```
+
+## その他の便利な操作
+
+### 検索とカウント
+* **`index()`**: 値からその要素のオフセットを取得します。
+* **`in`**: リスト内に特定の値が存在するかをテストし、ブール値を返します。
+* **`count()`**: 特定の値がリスト内にいくつ含まれているかを数えます。
+
+```python
+marxes = ['Groucho', 'Chico', 'Harpo']
+
+print(marxes.index('Chico')) # 1
+print('Groucho' in marxes)   # True
+print(marxes.count('Harpo')) # 1
+```
+
+### 結合とソート
+* **`join()`**: リストの要素（文字列）を特定の文字列で結合します。
+* **`sort()`**: リスト自体をその場でソートします（破壊的）。
+* **`sorted()`**: ソートされた新しいリストのコピーを返します（非破壊的）。降順にするには `reverse=True` を引数に追加します。
+
+```python
+marxes = ['Groucho', 'Chico', 'Harpo']
+
+# 結合
+print(', '.join(marxes)) # Groucho, Chico, Harpo
+
+# ソート (コピーを返す)
+sorted_marxes = sorted(marxes)
+print(sorted_marxes) # ['Chico', 'Groucho', 'Harpo']
+
+# ソート (自身を書き換える)
+marxes.sort(reverse=True)
+print(marxes) # ['Harpo', 'Groucho', 'Chico']
+```
+
+### 代入とコピーの違い
+リストを別の変数に代入（`=`）すると、同じリストオブジェクトへの「参照」が渡されるため、一方を変更するともう一方にも影響します。完全に独立したコピーを作るには、以下のいずれかの方法を使います。
+
+```python
+a = [1, 2, 3]
+
+# 参照渡し（同じオブジェクトを指す）
+b = a
+
+# 独立したコピーを作成する3つの方法
+c = a.copy()
+d = list(a)
+e = a[:]
+```
