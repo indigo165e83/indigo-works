@@ -1,0 +1,86 @@
+---
+title: "5.4 パッケージ"
+description: "Pythonアプリケーションをより大規模に構築するために、複数のモジュールを階層化してまとめる「パッケージ」についての要約"
+sidebar:
+  order: 26
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+1行のコードから始まり、関数、スタンドアローンプログラム、そして同一ディレクトリ内の複数モジュールへとステップアップしてきました。
+Pythonアプリケーションをさらに大規模なものにするためには、モジュールをディレクトリ（フォルダ）の階層構造に整理する必要があります。このように階層化されたモジュールの集まりを**パッケージ**と呼びます。
+
+## パッケージの作成手順
+
+例として、天気予報を返すプログラムをパッケージ化してみましょう。
+ここでは `sources` というディレクトリ（パッケージ）を作り、その中に翌日の天気用と週間天気用の2つのモジュールを作成します。
+
+### 1. 必要なディレクトリとファイルの準備
+
+まず、作業フォルダ（ここでは `boxes` とします）の中に、以下のような構成でファイルとディレクトリを作成します。
+
+```text
+boxes/
+├── weather.py (メインプログラム)
+└── sources/ (パッケージとなるディレクトリ)
+    ├── __init__.py
+    ├── daily.py (モジュール1)
+    └── weekly.py (モジュール2)
+```
+
+<Aside type="caution" title="重要なファイル: __init__.py">
+パッケージとして認識させたいディレクトリの中には、必ず **`__init__.py`** という名前のファイルを作成する必要があります。
+このファイルの中身は空で構いませんが、このファイルが存在することで、Pythonはそのディレクトリをパッケージとして扱うようになります。
+</Aside>
+
+### 2. モジュールの作成（`daily.py` と `weekly.py`）
+
+`sources` ディレクトリの中に、それぞれのモジュールのコードを記述します。どちらも `forecast` という同じ名前の関数を持ちますが、返す値が異なります。
+
+```python
+# boxes/sources/daily.py
+def forecast():
+    'ニセの天気予報'
+    return 'like yesterday'
+```
+
+```python
+# boxes/sources/weekly.py
+def forecast():
+    """ニセの週間天気予報"""
+    return ['snow', 'more snow', 'sleet', 'freezing rain', 'rain', 'fog', 'hail']
+```
+
+### 3. メインプログラムの作成（`weather.py`）
+
+親ディレクトリ（`boxes/`）にあるメインプログラムから、パッケージ内のモジュールを呼び出します。
+パッケージからモジュールをインポートするには、`from パッケージ名 import モジュール名` という構文を使用します。
+
+```python
+# boxes/weather.py
+from sources import daily, weekly
+
+print("Daily forecast:", daily.forecast())
+print("Weekly forecast:")
+
+# enumerate()を使って、リストの要素に1から始まる番号を振ってループする
+for number, outlook in enumerate(weekly.forecast(), 1):
+    print(number, outlook)
+```
+
+## 実行結果
+
+ターミナルで `weather.py` を実行すると、パッケージ内の各モジュールが正しくインポートされ、それぞれの関数が実行されることが確認できます。
+
+```bash
+$ python weather.py
+Daily forecast: like yesterday
+Weekly forecast:
+1 snow
+2 more snow
+3 sleet
+4 freezing rain
+5 rain
+6 fog
+7 hail
+```

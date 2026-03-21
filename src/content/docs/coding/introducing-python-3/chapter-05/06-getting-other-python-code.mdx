@@ -1,0 +1,47 @@
+---
+title: "5.6 バッテリー補充: ほかのPython コードの入手方法"
+description: "標準ライブラリ以外のサードパーティ製Pythonソフトウェアやコードサンプルを入手するための優れたリソースについての要約"
+sidebar:
+  order: 28
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Pythonには強力な標準ライブラリ（バッテリー）が同梱されていますが、時には必要な処理を行う関数がなかったり、要件に微妙に合わなかったりすることがあります。
+そのような場合は、標準ライブラリの外に広がる**オープンソースのサードパーティー製Pythonソフトウェア**の世界を活用します。
+
+## 優れたリソースへのリンク
+
+外部のパッケージやコードを探すための代表的なリソースとして、以下のものが挙げられます。
+
+* **PyPI (Python Package Index)**: http://pypi.python.org
+  * サードパーティ製パッケージが集まる公式リポジトリです（「Cheese Shop」とも呼ばれます）。
+* **github**: https://github.com/Python
+  * 世界中の開発者がソースコードを公開・共有しているプラットフォームです。
+* **readthedocs**: https://readthedocs.org/
+  * 様々なPythonプロジェクトのドキュメントがホスティングされているサイトです。
+* **activestate**: http://code.activestate.com/recipes/langs/python/
+  * 比較的規模の小さなコードサンプル（レシピ）が多数揃っています。
+
+## サードパーティ製パッケージの利用例
+
+本書のコードは基本的に標準インストールされる組み込み・標準ライブラリを使用していますが、一部で外部パッケージも利用しています。
+例えば、第1章で登場した外部パッケージの `requests` は、以下のようにインストールして利用します（インストールの詳細は本書の付録Dで解説されます）。
+
+```bash
+# ターミナルでのインストール例（PyPIからのダウンロード）
+$ pip install requests
+```
+
+```python
+# プログラム内での利用例（標準ライブラリと同じようにimportして使います）
+import requests
+
+# 外部パッケージを使うことで、複雑な処理もシンプルに記述できるようになります
+response = requests.get('[https://www.example.com](https://www.example.com)')
+print(response.status_code)
+```
+
+<Aside type="tip" title="開発を加速させるエコシステム">
+標準ライブラリにない機能でも、PyPIで検索すれば、すでに誰かが作って公開してくれている「車輪」が見つかることがほとんどです。これらを上手く組み合わせることで、開発スピードを劇的に向上させることができます。
+</Aside>

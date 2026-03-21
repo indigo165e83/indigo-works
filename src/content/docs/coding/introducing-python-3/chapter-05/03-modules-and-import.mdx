@@ -1,0 +1,93 @@
+---
+title: "5.3 モジュールとimport文"
+description: "Pythonコードをファイルにまとめて再利用するための「モジュール」の概念と、様々なimport文の使い方についての要約"
+sidebar:
+  order: 25
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Pythonコードを複数のファイルに分割し、それぞれを連携させて使う段階に進みましょう。
+**モジュール**とは、Pythonコードをまとめた単なるファイルのことです。本に例えるなら、関数が「段落」であるのに対し、モジュールは「章」にあたります。
+
+他のモジュールのコードを参照するには `import` 文を使用します。これにより、そのモジュール内の関数や変数が自分のプログラムで使えるようになります。
+
+## 5.3.1 モジュールのインポート
+
+最も単純な使い方は `import モジュール名` です。モジュール名は、対象のファイル名から `.py` 拡張子を取り除いたものです。
+
+例として、天気を返すモジュール `report.py` と、それを呼び出すメインプログラム `weatherman.py` を作ってみましょう。
+
+```python
+# モジュール: report.py
+def get_description():
+    from random import choice
+    possibilities = ['rain', 'snow', 'sleet', 'fog', 'sun', 'who knows']
+    return choice(possibilities)
+```
+
+```python
+# メインプログラム: weatherman.py
+import report
+
+# モジュール名.関数名() の形式で呼び出す
+description = report.get_description()
+print("Today's weather:", description)
+```
+
+### インポートの方法による違い
+
+上記のコードには2種類のインポート方法が含まれています。
+
+1. **`import report`**
+   モジュール全体をインポートします。使う時は `report.get_description()` のようにプレフィックス（モジュール名）を付ける必要があります。名前の衝突を避けられるため安全です。
+2. **`from random import choice`**
+   特定の機能だけを直接インポートします。使う時はプレフィックスなしで `choice()` と書けます。
+
+<Aside type="note" title="インポートする場所">
+インポートはファイルの先頭（関数の外側）でも、関数の中でも行えます。複数の場所で使うならファイルの冒頭にまとめ、特定の関数内でしか使わないなら関数の内側で呼び出すと良いでしょう。
+</Aside>
+
+## 5.3.2 別名によるモジュールのインポート
+
+名前が長い場合や、別のモジュールと名前が被る場合は、`as` を使って別名（エイリアス）をつけることができます。
+
+```python
+# report モジュールを wr という短い名前でインポートする
+import report as wr
+
+description = wr.get_description()
+print("Today's weather:", description)
+```
+
+## 5.3.3 必要なものだけをインポートする方法
+
+モジュール全体ではなく、特定の部品（関数など）だけをインポートすることも可能です。この場合も `as` を使って別名をつけることができます。
+
+```python
+# 元の名前のまま、必要な関数だけをインポート
+from report import get_description
+description = get_description()
+
+# 必要な関数をインポートしつつ、別名(do_it)をつける
+from report import get_description as do_it
+description = do_it()
+```
+
+## 5.3.4 モジュールサーチパス
+
+Pythonが `import` で指定されたモジュールを探しに行く場所は、標準の `sys` モジュールの `path` 変数（ディレクトリ名のリスト）に格納されています。
+
+```python
+import sys
+
+for place in sys.path:
+    print(place)
+
+# 出力例（環境によって異なります）:
+# (空行)
+# /usr/lib/python3.x/...
+```
+
+リストの最初の要素が空文字列（`''`）の場合、それは**カレントディレクトリ**（現在プログラムを実行しているフォルダ）を意味します。
+Pythonはリストの順番通りにモジュールを探し、最初に見つけたものを使います。そのため、標準ライブラリ（例: `random.py`）と同じ名前のファイルをカレントディレクトリに作ってしまうと、標準ライブラリより先に自分のファイルが読み込まれてしまうので注意が必要です。

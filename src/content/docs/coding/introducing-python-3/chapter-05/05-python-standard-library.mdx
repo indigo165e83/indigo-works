@@ -1,0 +1,153 @@
+---
+title: "5.5 Python 標準ライブラリ"
+description: "「バッテリー同梱」と呼ばれるPythonの強力な標準ライブラリの中から、辞書の拡張機能、カウンタ、デック、イテレータツールなどの便利なモジュールについての要約"
+sidebar:
+  order: 27
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Pythonは「バッテリー同梱」と表現されるほど、様々な機能を提供する大規模な標準ライブラリをはじめから持っています。自分でゼロからコードを書く前に、まずは標準モジュールに目的の機能がないか探してみるのがPythonプログラミングの基本です。
+
+この章では、汎用的に使える便利な標準モジュールをいくつか紹介します。
+
+## 5.5.1 存在しないキーの処理（`setdefault` と `defaultdict`）
+
+通常の辞書では、存在しないキーにアクセスするとエラー（例外）になります。これを防ぐための便利な方法が2つあります。
+
+### `setdefault()` 関数
+キーが存在しない場合のみ、指定したデフォルト値を辞書に追加してその値を返します。既にキーが存在する場合は、元の値がそのまま返されます。
+
+```python
+periodic_table = {'Hydrogen': 1, 'Helium': 2}
+
+# キーがないので追加される
+carbon = periodic_table.setdefault('Carbon', 12)
+print(carbon) # 12
+
+# 既にキーがある場合は元の値（2）が返る
+helium = periodic_table.setdefault('Helium', 947)
+print(helium) # 2
+print(periodic_table) # {'Helium': 2, 'Hydrogen': 1, 'Carbon': 12}
+```
+
+### `collections.defaultdict()` 関数
+辞書を作成する際に、あらかじめ「存在しないキーに対するデフォルト値を生成する関数」を指定しておけます。
+
+```python
+from collections import defaultdict
+
+# 存在しないキーが呼ばれたら int() つまり 0 を返す辞書
+food_counter = defaultdict(int)
+
+for food in ['spam', 'spam', 'eggs', 'spam']:
+    # キーがなくてもエラーにならず、0からインクリメントされる
+    food_counter[food] += 1
+
+for food, count in food_counter.items():
+    print(food, count)
+# spam 3
+# eggs 1
+```
+
+## 5.5.2 `Counter()` による要素数の計算
+
+リストなどの要素の数を数えたい場合は、`collections` モジュールの `Counter` が非常に強力です。
+
+```python
+from collections import Counter
+
+breakfast = ['spam', 'spam', 'eggs', 'spam']
+breakfast_counter = Counter(breakfast)
+
+print(breakfast_counter) # Counter({'spam': 3, 'eggs': 1})
+
+# 出現回数が多い順に取得する
+print(breakfast_counter.most_common(1)) # [('spam', 3)]
+```
+
+さらに、カウンタ同士で算術演算（`+` で結合、`-` で引き算、`&` で共通要素、`|` で和集合）を行うこともできます。
+
+## 5.5.3 `OrderedDict()` によるキー順の保持
+
+通常の辞書はキーを追加した順序を記憶しませんが、`collections.OrderedDict()` を使えば、要素が追加された順序を保持した辞書を作成できます。
+
+```python
+from collections import OrderedDict
+
+# タプルのリストから順序付き辞書を作成
+quotes = OrderedDict([
+    ('Moe', 'A wise guy, huh?'),
+    ('Larry', 'Ow!'),
+    ('Curly', 'Nyuk nyuk!'),
+])
+
+# 追加した通りの順番でループ処理される
+for stooge in quotes:
+    print(stooge)
+# Moe
+# Larry
+# Curly
+```
+
+## 5.5.4 スタック + キュー = デック (`deque`)
+
+`collections.deque`（デック）は「両端キュー」と呼ばれ、シーケンスの両端（先頭と末尾）のどちらからでも要素を追加・削除できるデータ構造です。
+
+* `popleft()`: 左端（先頭）の要素を削除して返す
+* `pop()`: 右端（末尾）の要素を削除して返す
+
+```python
+from collections import deque
+
+def palindrome(word):
+    """両端から文字を取り出して回文をチェックする例"""
+    dq = deque(word)
+    while len(dq) > 1:
+        if dq.popleft() != dq.pop():
+            return False
+    return True
+
+print(palindrome('radar')) # True
+```
+
+## 5.5.5 `itertools` による反復処理
+
+`itertools` モジュールには、ループ処理を強力にサポートする特別なイテレータ関数が多数含まれています。
+
+* `chain()`: 複数のイテラブルを繋げて1つのように扱う
+* `cycle()`: 要素を無限に循環して返す
+* `accumulate()`: 要素を累積計算（デフォルトは加算）しながら返す
+
+```python
+import itertools
+
+# chainの例
+for item in itertools.chain([1, 2], ['a', 'b']):
+    print(item) # 1, 2, a, b
+
+# accumulateの例（累積和）
+for item in itertools.accumulate([1, 2, 3, 4]):
+    print(item) # 1, 3, 6, 10
+```
+
+## 5.5.6 `pprint()` によるきれいな表示
+
+複雑な辞書やリストを通常の `print()` で出力すると、1行に長く繋がってしまい見づらくなります。`pprint` モジュールの `pprint()`（pretty print）を使うと、要素の位置を揃えて見やすく整形して表示してくれます。
+
+```python
+from pprint import pprint
+from collections import OrderedDict
+
+quotes = OrderedDict([
+    ('Moe', 'A wise guy, huh?'),
+    ('Larry', 'Ow!'),
+    ('Curly', 'Nyuk nyuk!')
+])
+
+# print(quotes) だと見づらいが、pprintなら見やすい
+pprint(quotes)
+# {'Moe': 'A wise guy, huh?',
+#  'Larry': 'Ow!',
+#  'Curly': 'Nyuk nyuk!'}
+```
