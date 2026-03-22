@@ -1,0 +1,80 @@
+---
+title: "12.5 名前とドキュメント"
+description: "Pythonにおける適切な命名規則とドキュメンテーション（コメント、docstring）の重要性、および定数の扱いについての要約"
+sidebar:
+  order: 64
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+デベロッパーは、自分が書いたコードであっても時間が経つと忘れてしまうものです。そのため、コードにはドキュメント（コメントとdocstring）を残すことが重要ですが、それだけでなく、**変数、関数、モジュール、クラスにわかりやすい名前を付けること**も立派なドキュメンテーションの一部です。
+
+## 避けるべきコメント
+
+コードの動きをそのまま翻訳したような、無意味でくどいコメントは避けるべきです。
+
+```python
+# 悪い例：変数の役割ではなく、やっていることをそのまま書いているだけ
+# 変数"num"に10を代入するつもりだ
+num = 10
+```
+
+代わりに、「なぜその値を代入したのか」「なぜその変数名にしたのか」がわかるようにコードを書くべきです。
+
+## コードの改善例（華氏から摂氏への変換）
+
+魔法の数字（マジックナンバー）を直接書くのではなく、意味のある名前を変数に付けた例を見てみましょう。
+
+### 改善前のコード
+
+```python
+def ftoc(f_temp):
+    "華氏の温度<f_temp>を摂氏に変換して返す。"
+    f_boil_temp = 212.0
+    f_freeze_temp = 32.0
+    c_boil_temp = 100.0
+    c_freeze_temp = 0.0
+    f_range = f_boil_temp - f_freeze_temp
+    c_range = c_boil_temp - c_freeze_temp
+    f_c_ratio = c_range / f_range
+    c_temp = (f_temp - f_freeze_temp) * f_c_ratio + c_freeze_temp
+    return c_temp
+
+if __name__ == '__main__':
+    for f_temp in [-40.0, 0.0, 32.0, 100.0, 212.0]:
+        c_temp = ftoc(f_temp)
+        print('%f F => %f C' % (f_temp, c_temp))
+```
+
+このコードは正しく動きますが、さらに2つの改善を加えることができます。
+
+1. **定数の命名規則**: Pythonには定数（値を変更できない変数）の仕組みはありませんが、PEP8スタイルガイドでは、定数として扱うべき変数は**大文字とアンダースコア**（例：`ALL_CAPS`）で命名することが推奨されています。
+2. **定数計算の配置**: 毎回固定の計算結果になるものは、関数の内側ではなくモジュールのトップレベル（外側）に移動させるべきです。これにより、関数が呼び出されるたびに無駄な計算が走るのを防げます。
+
+### 改善後のコード
+
+```python
+# 定数は大文字とアンダースコアで命名し、モジュールのトップレベルに配置する
+F_BOIL_TEMP = 212.0
+F_FREEZE_TEMP = 32.0
+C_BOIL_TEMP = 100.0
+C_FREEZE_TEMP = 0.0
+F_RANGE = F_BOIL_TEMP - F_FREEZE_TEMP
+C_RANGE = C_BOIL_TEMP - C_FREEZE_TEMP
+F_C_RATIO = C_RANGE / F_RANGE
+
+def ftoc(f_temp):
+    "華氏の温度<f_temp>を摂氏に変換して返す。"
+    # 関数の中は必要な計算だけになり、スッキリして高速になる
+    c_temp = (f_temp - F_FREEZE_TEMP) * F_C_RATIO + C_FREEZE_TEMP
+    return c_temp
+
+if __name__ == '__main__':
+    for f_temp in [-40.0, 0.0, 32.0, 100.0, 212.0]:
+        c_temp = ftoc(f_temp)
+        print('%f F => %f C' % (f_temp, c_temp))
+```
+
+<Aside type="tip" title="docstringの活用">
+関数名の直下にある `""` で囲まれた文字列が **docstring（ドックストリング）** です。この関数が何をするものなのかを簡潔に説明するために必ず記述する癖をつけましょう。
+</Aside>

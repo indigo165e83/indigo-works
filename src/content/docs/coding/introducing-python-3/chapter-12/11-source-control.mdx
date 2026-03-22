@@ -1,0 +1,95 @@
+---
+title: "12.11 ソース管理"
+description: "分散バージョンコントロールシステム（Mercurial, Git）の紹介と、Gitを使った基本的なワークフロー（リポジトリ作成、コミット、履歴確認）についての要約"
+sidebar:
+  order: 70
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+少数のプログラムを扱っているうちは変更を覚えていられますが、ミスで数日分の仕事を失わないためにはソース管理システムが必須です。特に複数人での開発において、ソース管理は欠かせないツールとなります。
+
+## 分散バージョンコントロールシステム
+
+Pythonの世界で広く使われているのは、**Mercurial** と **Git** の2つです。これらは「分散型」と呼ばれ、リポジトリのコピーを複数の場所に持ちます。
+
+* **Mercurial**: Pythonで書かれており、習得が比較的簡単です。
+* **Git**: Linuxカーネル開発のために作られたシステムで、現在はオープンソース開発において支配的な地位にあります。最大のホストサイトは **GitHub** です。
+
+## 12.11.2 Gitの基本操作（試運転）
+
+Gitを使った基本的なワークフローを、コマンドラインでの操作例とともに見ていきましょう。
+
+### 1. リポジトリの初期化
+新しいディレクトリを作成し、Gitリポジトリとして初期化します。
+
+```bash
+$ mkdir newdir
+$ cd newdir
+$ git init
+# Initialized empty Git repository ...
+```
+
+### 2. ファイルの作成と追加
+ファイルを作成し、Gitの管理対象としてステージング（add）します。
+
+```bash
+# ファイルの作成
+$ echo "print('Oops')" > test.py
+
+# ファイルをステージングに追加
+$ git add test.py
+
+# 状態の確認
+$ git status
+# On branch master
+# Changes to be committed:
+#   new file:   test.py
+```
+
+### 3. 変更のコミット
+ステージングされた変更を、メッセージとともにリポジトリに記録（コミット）します。
+
+```bash
+$ git commit -m "my first commit"
+# [master (root-commit) ...] my first commit
+#  1 file changed, 1 insertion(+)
+```
+
+### 4. 変更の確認と更新
+ファイルを編集したあと、以前のバージョンとの違い（差分）を確認したり、再度コミットしたりします。
+
+```bash
+# ファイルを書き換える
+$ echo "print('Ops!')" > test.py
+
+# 差分を表示
+$ git diff
+# -print('Oops')
+# +print('Ops!')
+
+# 変更をステージングしてコミット
+$git add test.py$ git commit -m "my first change"
+```
+
+### 5. 履歴の表示
+これまでの変更履歴を新しい順に確認します。
+
+```bash
+$ git log test.py
+# commit ...
+# Author: ...
+# Date: ...
+#     my first change
+#
+# commit ...
+#     my first commit
+```
+
+<Aside type="tip" title="GitHubからのクローン">
+既存のプロジェクト（例えば本書のサンプルコード）を自分のPCにコピーしたい場合は、`git clone` コマンドを使用します。
+
+```bash
+$ git clone [https://github.com/madscheme/introducing-python](https://github.com/madscheme/introducing-python)
+```
+</Aside>

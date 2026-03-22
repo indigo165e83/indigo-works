@@ -1,0 +1,89 @@
+---
+title: "12.10 コードの最適化"
+description: "Pythonコードの実行速度を計測する方法（time, timeit）や、アルゴリズムの比較、PyPyやCythonといった高速化の選択肢についての要約"
+sidebar:
+  order: 69
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Pythonは通常十分に高速ですが、パフォーマンスが不足することもあります。コードを最適化する際の鉄則は、推測で修正するのではなく「切る前に計測する」ことです。
+
+## 12.10.1 実行時間の計測
+
+### `time` モジュールによる単純な計測
+もっとも手軽な方法は、処理の前後の時刻の差分をとることです。
+
+```python
+from time import time
+
+t1 = time()
+# 計測したい処理
+num = 5
+num *= 2
+# 経過時間を表示
+print(time() - t1)
+```
+
+### `timeit` モジュールによる精密な計測
+より正確なベンチマークをとるには、標準ライブラリの `timeit` を使用します。
+
+```python
+from timeit import timeit
+
+# 指定したコードを number 回実行した合計時間を返す
+# 100万分の2秒程度の非常に短い処理も計測可能
+print(timeit('num = 5; num *= 2', number=1))
+```
+
+さらに、`repeat()` 関数を使うと、計測を複数回繰り返してリストとして取得できます。
+
+```python
+from timeit import repeat
+# 1回の実行を3回繰り返す
+print(repeat('num = 5; num *= 2', number=1, repeat=3))
+```
+
+## 12.10.2 アルゴリズムとデータ構造の比較
+
+「どの書き方が最も高速か」を比較することは重要です。例として、リストを作成する際に `append()` を使う場合と「リスト内包表記」を使う場合の速度を比較してみます。
+
+```python
+from timeit import timeit
+
+# 方法1: forループとappend()
+def make_list_1():
+    result = []
+    for value in range(1000):
+        result.append(value)
+    return result
+
+# 方法2: リスト内包表記
+def make_list_2():
+    result = [value for value in range(1000)]
+    return result
+
+print('make_list_1 (append) takes:', timeit(make_list_1, number=1000), 'seconds')
+print('make_list_2 (comprehension) takes:', timeit(make_list_2, number=1000), 'seconds')
+```
+
+多くの場合、リスト内包表記は手作業での構築よりも2倍以上高速に動作します。
+
+## 12.10.3 さらに高速化するための選択肢
+
+Python自体の工夫で限界が来た場合、以下の高度なオプションがあります。
+
+* **Cython**: Pythonに型宣言などのアノテーションを付け、C言語のコードにコンパイルします。数値計算などで1,000倍高速になることもあります。
+* **NumPy**: 数学ライブラリであり、内部がC言語で書かれているため非常に高速です。
+* **Cエクステンション**: 速度が必要な部分をC言語で書き、Pythonでラップします。
+
+## 12.10.4 PyPy による高速化
+
+標準のPython（CPython）の代わりに、**PyPy** という別のインタープリタを使う方法もあります。
+
+* **JIT（Just-In-Time）コンパイル**: Javaや.NETで使われている高速化技術をPythonに応用したものです。
+* **パフォーマンス**: CPythonに比べて平均で6倍、最大で20倍も高速になることがあります。
+
+<Aside type="note" title="最適化のポイント">
+高速化が必要になったときは、まず適切なアルゴリズムやデータ構造（内包表記など）を選んでいるかを確認し、それでも足りない場合に PyPy や Cython などの検討に移るのが一般的な手順です。
+</Aside>

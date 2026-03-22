@@ -1,0 +1,93 @@
+---
+title: "12.9 エラーメッセージのロギング"
+description: "Pythonのloggingモジュールを使った、メッセージの優先順位（レベル）、ハンドラ、フォーマッタの基本的な使い方についての要約"
+sidebar:
+  order: 68
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+プログラムの動作状況を記録する際、`print()` を使う段階から卒業し、専用の「ログ」を活用するようにしましょう。ログにはタイムスタンプやユーザー名などの情報を付加でき、障害発生時の原因究明に非常に役立ちます。
+
+## 12.9.1 `logging` モジュールの基本コンセプト
+
+Pythonの `logging` モジュールは、以下の要素で構成されています。
+
+* **メッセージ**: 保存したいテキスト内容。
+* **優先順位レベル**: ランク付けのための5つのレベル。
+* **ロガー**: 通信の主要な窓口となるオブジェクト。
+* **ハンドラ**: メッセージを端末やファイル、メールなどに送る担当者。
+* **フォーマッタ**: 出力される見た目を整えるもの。
+
+## 12.9.2 優先順位レベル
+
+以下の5つのレベルが用意されており、それぞれ対応する関数があります。
+
+```python
+import logging
+
+# デフォルトでは WARNING 以上のレベルのみが表示される
+logging.debug("Looks like rain")          # 表示されない
+logging.info("And hail")                # 表示されない
+logging.warning("Did I hear thunder?")   # WARNING:root:Did I hear thunder?
+logging.error("Was that lightning?")     # ERROR:root:Was that lightning?
+logging.critical("Stop fencing!")        # CRITICAL:root:Stop fencing!
+```
+
+### レベルの設定 (`basicConfig`)
+デフォルトのしきい値は `WARNING` ですが、`basicConfig()` を使うと `DEBUG`（すべて表示）などに変更できます。
+
+```python
+import logging
+# すべてのレベルをログに記録するように設定
+logging.basicConfig(level=logging.DEBUG)
+logging.debug("It's raining again") # 表示されるようになる
+```
+
+## 12.9.3 ロガーオブジェクトとハンドラ
+
+特定の名前を持つ「ロガーオブジェクト」を作成することで、ログの階層管理が可能になります。また、`filename` 引数を指定すると、画面ではなくファイルにログを保存できます。
+
+```python
+import logging
+
+# ログを 'blue_ox.log' というファイルに書き込む設定
+logging.basicConfig(level='DEBUG', filename='blue_ox.log')
+
+# 'bunyan' という名前のロガーを作成
+logger = logging.getLogger('bunyan')
+
+logger.debug("Where's my axe?")
+logger.warning("I need my axe")
+```
+
+ファイルには以下のように記録されます。
+```text
+DEBUG:bunyan:Where's my axe?
+WARNING:bunyan:I need my axe
+```
+
+## 12.9.4 フォーマッタによるカスタマイズ
+
+`format` 文字列を指定することで、日時の追加や表示項目の順序を自由に変更できます。
+
+```python
+import logging
+
+# 書式を指定
+# asctime: 日時, levelname: レベル名, lineno: 行番号, message: 本文
+fmt = '%(asctime)s %(levelname)s %(lineno)s %(message)s'
+logging.basicConfig(level='DEBUG', format=fmt)
+
+logger = logging.getLogger('bunyan')
+logger.error("Where's my other plaid shirt?")
+```
+
+**出力例:**
+```text
+2014-04-08 23:13:59,899 ERROR 1 Where's my other plaid shirt?
+```
+
+<Aside type="tip" title="実用的なログ管理">
+実際のシステムでは、ログがディスクを使い果たさないように、毎日名前を変えて古いものを圧縮する「ローテーション」の設定を行うのが一般的です。
+</Aside>

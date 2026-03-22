@@ -1,0 +1,80 @@
+---
+title: "12.7 Pythonコードのデバッグ"
+description: "Pythonコードのデバッグ手法についての要約。vars()を使った変数の確認や、デコレータを使った関数呼び出しのトレース方法"
+sidebar:
+  order: 66
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+> デバッグは、最初にコードを書くときと比べて2倍も大変だ。そのため、できる限り巧妙なコードを書こうとする人は、定義上、そのコードをデバッグできるほど賢くない。
+> ― Brian Kernighan
+
+バグを防ぐためにはテストが第一ですが、それでもバグは発生するためデバッグが必要になります。Pythonでデバッグを行う際の手軽な方法は `print()` を使うことですが、より便利に情報を引き出すテクニックがいくつかあります。
+
+## 12.7.1 `vars()` によるローカル変数の抽出
+
+`vars()` 関数を使うと、そのスコープ（たとえば関数内）で定義されているローカル変数の値（引数を含む）を辞書として抽出・表示することができます。
+
+```python
+def func(*args, **kwargs):
+    # 関数内のすべてのローカル変数（引数）を表示する
+    print(vars())
+
+func(1, 2, 3)
+# 出力: {'kwargs': {}, 'args': (1, 2, 3)}
+
+func(['a', 'b', 'argh'])
+# 出力: {'kwargs': {}, 'args': (['a', 'b', 'argh'],)}
+```
+
+## 12.7.2 デコレータを使ったトレース
+
+「4.9 デコレータ」で学んだ仕組みを使うと、関数自体のコードを変更することなく、関数が呼び出される前と後で入力引数と出力値を表示させることができます。
+
+以下の例では、関数の入出力を表示する `dump` というデコレータを作成し、`double` 関数に適用しています。
+
+```python
+# dump_decorator.py
+
+def dump(func):
+    """入力引数と出力値を表示するデコレータ"""
+    def wrapped(*args, **kwargs):
+        print("Function name: %s" % func.__name__)
+        print("Input arguments: %s" % ' '.join(map(str, args)))
+        print("Input keyword arguments: %s" % list(kwargs.items()))
+        
+        # 本来の関数を実行
+        output = func(*args, **kwargs)
+        
+        print("Output:", output)
+        return output
+    return wrapped
+
+# @dump を付けるだけでデバッグ出力が有効になる
+@dump
+def double(*args, **kwargs):
+    """すべての引数を2倍にして返す"""
+    output_list = [2 * arg for arg in args]
+    output_dict = {k: 2 * v for k, v in kwargs.items()}
+    return output_list, output_dict
+
+if __name__ == '__main__':
+    # 関数の実行
+    output = double(3, 5, first=100, next=98.6, last=-40)
+```
+
+このコードを実行すると、`double` 関数の処理自体には手を加えていないにもかかわらず、渡された引数と返された結果がコンソールに詳細に出力されます。
+
+```bash
+# 実行結果
+$ python dump_decorator.py
+Function name: double
+Input arguments: 3 5
+Input keyword arguments: [('first', 100), ('next', 98.6), ('last', -40)]
+Output: ([6, 10], {'first': 200, 'next': 197.2, 'last': -80})
+```
+
+<Aside type="tip" title="デコレータの利点">
+デコレータを使ったデバッグは、本番コード（関数の中身）に `print()` を散りばめる必要がなく、デコレータの行（`@dump`）をコメントアウトするだけで簡単にデバッグ出力をオフにできるため、非常にクリーンで安全な方法です。
+</Aside>
