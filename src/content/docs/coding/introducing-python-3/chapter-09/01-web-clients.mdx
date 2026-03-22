@@ -1,0 +1,104 @@
+---
+title: "9.1 ウェブクライアント"
+description: "HTTPの基礎から、Pythonの標準ライブラリやrequestsモジュールを使ったウェブクライアントの実装についての要約"
+sidebar:
+  order: 51
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+ウェブは「クライアント・サーバーシステム」です。クライアント（ウェブブラウザなど）がサーバーに要求（リクエスト）を送り、HTTP（Hypertext Transfer Protocol）を介して応答（レスポンス）を受け取ります。
+
+HTTPの重要な特徴として**「ステートレス」**（個々の接続が独立しており、状態を保持しない）であることが挙げられます。これを補い、ログイン状態やショッピングカートの中身などを管理するために「クッキー（Cookie）」が使われます。
+
+## 9.1.1 telnetによるテスト
+
+HTTPはテキストベースのプロトコルなので、コマンドラインツールの `telnet` を使って手動でサーバーと通信することができます。
+
+```bash
+# ターミナルで実行（Googleのポート80に接続）
+$ telnet [www.google.com](https://www.google.com) 80
+```
+
+接続後、以下のように入力してEnterキーを2回押すと、サーバーからHTTP応答ヘッダーが返ってきます。
+
+```http
+HEAD / HTTP/1.1
+
+```
+
+## 9.1.2 Pythonの標準ウェブライブラリ
+
+Python 3では、ウェブクライアントやサーバーに関するモジュールが `http` と `urllib` パッケージに整理されました。
+標準ライブラリの `urllib.request` を使って、ウェブサイトからデータを取得してみましょう。
+
+```python
+import urllib.request as ur
+
+# テキストデータを返すダミーのAPIのURL
+url = '[https://raw.githubusercontent.com/koki0702/introducing-python/master/dummy_api/fortune_cookie_random1.txt](https://raw.githubusercontent.com/koki0702/introducing-python/master/dummy_api/fortune_cookie_random1.txt)'
+
+# URLを開いて接続
+conn = ur.urlopen(url)
+print(conn)
+# 出力例: <http.client.HTTPResponse object at 0x1006fad50>
+
+# データの読み出し（バイト列が返る）
+data = conn.read()
+print(data)
+# 出力例: b'You will be surprised by a loud noise.\r\n\n[codehappy] [http://iheartquotes.com/fortune/show/20447](http://iheartquotes.com/fortune/show/20447)\n'
+```
+
+### ステータスコードとHTTPヘッダー
+接続オブジェクトからは、HTTPステータスコードやヘッダー情報を取得できます。
+
+```python
+# HTTPステータスコードの確認（200は成功）
+print(conn.status) # 200
+
+# 特定のヘッダーの取得
+print(conn.getheader('Content-Type')) # text/plain
+
+# すべてのヘッダーの取得
+for key, value in conn.getheaders():
+    print(key, value)
+```
+
+<Aside type="note" title="HTTPステータスコードの分類">
+* **1xx**: 情報
+* **2xx**: 成功（例：200 OK）
+* **3xx**: リダイレクト
+* **4xx**: クライアントエラー（例：404 Not Found）
+* **5xx**: サーバーエラー（例：500 Internal Server Error）
+</Aside>
+
+## 9.1.3 標準ライブラリを越えて (`requests` ライブラリ)
+
+標準ライブラリの `urllib` でも通信は可能ですが、サードパーティ製の **`requests`** ライブラリを使うと、より短く直感的なコードでウェブ開発を行えます。
+日常的なウェブクライアントのタスクでは `requests` の使用が強く推奨されています。
+
+```bash
+# requestsライブラリのインストール
+$ pip install requests
+```
+
+`requests` を使って先ほどのURLからデータを取得するコードは以下のようになります。
+
+```python
+import requests
+
+url = '[https://raw.githubusercontent.com/koki0702/introducing-python/master/dummy_api/fortune_cookie_random2.txt](https://raw.githubusercontent.com/koki0702/introducing-python/master/dummy_api/fortune_cookie_random2.txt)'
+
+# GETリクエストを送信
+resp = requests.get(url)
+print(resp) 
+# 出力: <Response [200]>
+
+# テキストとしてデータを取得（バイト列ではなく文字列として返る）
+print(resp.text)
+# 出力:
+# I know that there are people who do not love their fellow man, and I hate
+# people like that!
+# -- Tom Lehrer, Satirist and Professor
+# [codehappy] [http://iheartquotes.com/fortune/show/21465](http://iheartquotes.com/fortune/show/21465)
+```

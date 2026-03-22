@@ -1,0 +1,109 @@
+---
+title: "9.2 ウェブサーバー"
+description: "Pythonを使ったウェブサーバーの構築方法。標準ライブラリの簡易サーバーから、BottleやFlaskといったウェブフレームワークの基礎についての要約"
+sidebar:
+  order: 52
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Pythonは、ウェブサーバーやサーバーサイドプログラムの開発に非常に優れた言語です。様々な用途に合わせた豊富なウェブフレームワークが用意されています。
+
+## 9.2.1 Pythonによるもっとも単純なウェブサーバー
+
+Pythonには、静的なファイル（HTMLや画像など）を配信するための飾り気のない単純なHTTPサーバーが標準で組み込まれています。
+ターミナル（コマンドプロンプト）で以下のコマンドを1行実行するだけで、カレントディレクトリをルートとするウェブサーバーが起動します。
+
+```bash
+$ python -m http.server
+# デフォルトではポート8000で起動します。
+# 別のポートを使いたい場合は「python -m http.server 9999」のように指定します。
+```
+
+ブラウザで `http://localhost:8000` にアクセスすると、実行したディレクトリ内のファイル一覧が表示され、クリックして中身を確認できます。
+
+<Aside type="caution" title="本番環境での使用はNG">
+このサーバーは開発時の簡単なテストには非常に便利ですが、アクセス数が多い本番稼働のウェブサイトで使ってはいけません。また、動的なプログラムを実行することもできません。
+</Aside>
+
+## 9.2.2 WSGI (Web Server Gateway Interface)
+
+動的なウェブサイトを作る場合、Pythonのプログラムとウェブサーバー（Apacheなど）を連携させる必要があります。Pythonでは、この両者を繋ぐための普遍的なAPIとして **WSGI（ウィズギー）** が定義されています。
+これから紹介するPythonのウェブフレームワークは、どれもこのWSGIをベースに作られています。
+
+## 9.2.4 Bottle フレームワーク
+
+Bottleは1つのPythonファイルだけで構成されている、非常に軽量で試しやすいウェブフレームワークです。
+
+```bash
+# インストール
+$ pip install bottle
+```
+
+URLのパス（ルーティング）と、実行する関数を結びつける（マッピングする）ための簡単なサーバーを書いてみましょう。
+
+```python
+# bottle3.py
+from bottle import route, run, static_file
+
+# ホームページへのアクセスを処理
+@route('/')
+def home():
+    return static_file('index.html', root='.')
+
+# URLに引数を渡すルーティングの例
+@route('/echo/<thing>')
+def echo(thing):
+    return "Say hello to my little friend: %s!" % thing
+
+# テスト用サーバーの起動
+run(host='localhost', port=9999)
+```
+
+ブラウザで `http://localhost:9999/echo/Mothra` にアクセスすると、「Say hello to my little friend: Mothra!」と表示されます。
+
+## 9.2.5 Flask フレームワーク
+
+FlaskはBottleと同じくらいシンプルでありながら、本格的な開発に役立つ拡張機能や優れたテンプレートエンジン（Jinja2）を備えた、非常に人気の高いフレームワークです。
+
+```bash
+# インストール
+$ pip install flask
+```
+
+Flaskを使って、URLから受け取った引数をHTMLテンプレートに流し込む例を見てみましょう。
+
+**1. テンプレートファイルの作成** (`templates/flask2.html`)
+```html
+<html>
+<head>
+    <title>Flask Example</title>
+</head>
+<body>
+    Say hello to my little friend: {{ thing }}
+</body>
+</html>
+```
+
+**2. サーバーコードの作成** (`flask2.py`)
+```python
+from flask import Flask, render_template
+
+# アプリケーションの初期化
+app = Flask(__name__)
+
+@app.route('/echo/<thing>')
+def echo(thing):
+    # テンプレートファイルに変数(thing)を渡してHTMLを生成する
+    return render_template('flask2.html', thing=thing)
+
+# デバッグモードを有効にして起動（変更が即座に反映され、エラー詳細が見られる）
+app.run(port=9999, debug=True)
+```
+
+ブラウザで `http://localhost:9999/echo/Gamera` にアクセスすると、テンプレートの `{{ thing }}` の部分が "Gamera" に置き換わったHTMLが表示されます。
+
+## 9.2.6 & 9.2.7 本番用サーバーとその他のフレームワーク
+
+* **本番用サーバー**: BottleやFlaskの `run()` はあくまで開発・テスト用です。本番環境では、**Apache (mod_wsgi)** や **nginx (uWSGI)** といった高速なサーバー上でPythonを実行すべきです。
+* **大規模なフレームワーク**: データベース（ORM）や管理画面などが最初から組み込まれている、より大規模なフレームワークとして **Django（ジャンゴ）** なども広く使われています。用途に合わせて適切なフレームワークを選択しましょう。

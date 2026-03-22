@@ -1,0 +1,108 @@
+---
+title: "9.3 ウェブサービスとオートメーション"
+description: "Pythonを使ったブラウザの自動操作、Web API（REST）の概念、およびBeautifulSoupを用いたHTMLのスクレイピングについての要約"
+sidebar:
+  order: 53
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+ウェブは人間がHTMLページを見るためだけのものではなく、プログラムとデータを結びつける強力な手段としても使われています。この章では、Pythonプログラムからウェブサービスを利用したり、ウェブ上の操作を自動化したりする方法を学びます。
+
+## 9.3.1 `webbrowser` モジュール
+
+標準ライブラリの `webbrowser` モジュールを使うと、Pythonスクリプトから直接ウェブブラウザを操作して、指定したページを開くことができます。
+
+```python
+import webbrowser
+
+url = '[http://www.python.org/](http://www.python.org/)'
+
+# デフォルトブラウザでURLを開く
+webbrowser.open(url)
+
+# 新しいウィンドウで開く
+webbrowser.open_new(url)
+
+# 新しいタブで開く（ブラウザが対応している場合）
+webbrowser.open_new_tab(url)
+```
+
+<Aside type="note" title="隠し機能">
+対話型インタープリタで `import antigravity` と入力してみてください。`webbrowser` モジュールが裏で呼び出され、ブラウザで啓蒙的なPythonのコミック（xkcd）が開かれます。
+</Aside>
+
+## 9.3.2 Web API と REST
+
+ウェブページ（HTML）からデータを抽出するのは、デザインが変更されるとプログラムが動かなくなるため不安定です。代わりに、プログラムから利用しやすい形式（JSONやXMLなど）でデータを提供する **Web API** を利用するのが一般的です。
+
+現在、多くのWeb APIは **REST (Representational State Transfer)** という設計思想に基づいています（RESTful APIと呼ばれます）。RESTfulなサービスでは、HTTPの動詞（メソッド）を決まった意味で使い分けます。
+
+* **`GET`**: サーバーからデータを取得する（読み出し）。
+* **`POST`**: サーバーのデータを更新する。
+* **`PUT`**: 新しいリソース（データ）を作成する。
+* **`DELETE`**: データを削除する。
+* **`HEAD`**: データ本体ではなく、リソースの情報（ヘッダーのみ）を取得する。
+
+## 9.3.4 クロールとスクレイピング
+
+APIが提供されていないサイトからデータを集めるには、プログラムを使って自動的にウェブページを巡回（**クロール**）し、HTMLの中から必要な情報だけを抽出（**スクレイピング**）する必要があります。
+
+本格的なクローラー兼スクレイパーを構築したい場合は、サードパーティ製の強力なフレームワークである **Scrapy** を利用すると良いでしょう。
+
+```bash
+# Scrapyのインストール
+$ pip install scrapy
+```
+
+## 9.3.5 `BeautifulSoup` によるHTMLのスクレイピング
+
+HTMLは文法違反（閉じ忘れのタグなど）が多いことが多く、正規表現だけで解析するのは非常に困難です。HTMLの中から特定のデータを抽出したいだけなら、**BeautifulSoup** というライブラリが非常に役立ちます。
+
+```bash
+# BeautifulSoup4のインストール
+$ pip install beautifulsoup4
+```
+
+例として、指定したウェブページからすべてのリンク（`<a>` タグの `href` 属性）を抽出して表示するプログラムを作ってみましょう。
+
+```python
+# links.py
+import sys
+import requests
+from bs4 import BeautifulSoup as soup
+
+def get_links(url):
+    # requestsを使ってウェブページのHTMLデータを取得
+    result = requests.get(url)
+    page = result.text
+    
+    # BeautifulSoupでHTMLをパース（解析）
+    doc = soup(page, 'html.parser')
+    
+    # find_all('a') ですべての <a> タグを見つけ、href属性の値を抽出するジェネレータ内包表記
+    links = [element.get('href') for element in doc.find_all('a')]
+    return links
+
+if __name__ == '__main__':
+    # コマンドライン引数からURLを受け取る
+    for url in sys.argv[1:]:
+        print('Links in', url)
+        # enumerateを使って番号付きでリンクを表示
+        for num, link in enumerate(get_links(url), start=1):
+            print(num, link)
+        print()
+```
+
+このプログラムをターミナルから実行すると、そのページに含まれるリンクが一覧表示されます。
+
+```bash
+# 実行例
+$ python links.py [http://boingboing.net](http://boingboing.net)
+
+# 出力例:
+# Links in [http://boingboing.net](http://boingboing.net)
+# 1 [http://boingboing.net/suggest.html](http://boingboing.net/suggest.html)
+# 2 [http://boingboing.net/category/feature/](http://boingboing.net/category/feature/)
+# ...
+```
