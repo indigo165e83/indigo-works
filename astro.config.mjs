@@ -65,23 +65,23 @@ export default defineConfig({
             },
             {
               label: 'Foundation Level シラバス 要約',
-              link: '/jstqb/foundation-v4/',
+              link: '/jstqb/core/foundation/',
             },
             {
               label: 'Advanced Level テストアナリスト (AL-TA) シラバス 要約',
-              link: '/jstqb/advanced-ta/',
+              link: '/jstqb/core/advanced-ta/',
             },
             {
               label: 'Advanced Level テストマネージャ (AL-TM) シラバス 要約',
-              link: '/jstqb/advanced-tm/',
+              link: '/jstqb/core/advanced-tm/',
             },
             {
               label: 'Advanced Level テスト自動化エンジニア(TAE) シラバス 要約',
-              link: '/jstqb/advanced-tae/',
+              link: '/jstqb/specialist/advanced-tae/',
             },
             {
               label: 'Foundation Level AIテスティング(CT-AI) シラバス 要約',
-              link: '/jstqb/foundation-ctai/',
+              link: '/jstqb/specialist/foundation-ctai/',
             },
           ],
         },
