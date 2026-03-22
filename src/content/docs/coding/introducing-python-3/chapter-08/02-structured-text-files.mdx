@@ -1,0 +1,176 @@
+---
+title: "8.2 構造化されたテキストファイル"
+description: "CSV、XML、JSON、YAMLなどの構造化されたデータの読み書きと、pickleによるPythonオブジェクトのシリアライズについての要約"
+sidebar:
+  order: 46
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+単純なテキストファイルは「行」という1段階の構造しか持ちませんが、プログラム間でデータを交換したり、より複雑な階層構造を保存したりする場合には、構造化されたテキストファイルが役立ちます。
+Pythonには、様々な形式の構造化ファイルを読み書きするための標準モジュールやサードパーティ製ライブラリが用意されています。
+
+## 8.2.1 CSV
+
+CSV（カンマ区切り）ファイルは、スプレッドシートやデータベースとのデータ交換でよく使われます。エスケープや改行コードの違いなど、構文解析には複雑な問題が含まれるため、自作するのではなく標準の `csv` モジュールを使うべきです。
+
+### リストとしての読み書き
+
+```python
+import csv
+
+villains = [
+    ['Doctor', 'No'],
+    ['Rosa', 'Klebb'],
+    ['Mister', 'Big'],
+]
+
+# 書き込み
+with open('villains.csv', 'wt') as fout:
+    csvout = csv.writer(fout)
+    csvout.writerows(villains)
+
+# 読み出し
+with open('villains.csv', 'rt') as fin:
+    cin = csv.reader(fin)
+    villains_read = [row for row in cin]
+print(villains_read)
+```
+
+### 辞書としての読み書き (`DictWriter`, `DictReader`)
+列名（ヘッダー）を使って、辞書のリストとしてデータを扱うこともできます。
+
+```python
+import csv
+
+villains_dict = [
+    {'first': 'Doctor', 'last': 'No'},
+    {'first': 'Rosa', 'last': 'Klebb'},
+]
+
+# 書き込み（ヘッダー付き）
+with open('villains_dict.csv', 'wt') as fout:
+    cout = csv.DictWriter(fout, ['first', 'last'])
+    cout.writeheader()
+    cout.writerows(villains_dict)
+
+# 読み出し
+with open('villains_dict.csv', 'rt') as fin:
+    cin = csv.DictReader(fin)
+    villains_read = [row for row in cin]
+print(villains_read)
+```
+
+## 8.2.2 XML
+
+XMLは、タグ（`<tag>`）を使ってデータを区切るマークアップ形式で、階層構造を表現するのに適しています。Pythonで最も簡単にXMLを読み取るには `xml.etree.ElementTree` を使います。
+
+```python
+import xml.etree.ElementTree as et
+
+# XMLファイルのパース（解析）
+tree = et.ElementTree(file='menu.xml')
+root = tree.getroot()
+
+print('root tag:', root.tag)
+
+# 子要素をループでたどる
+for child in root:
+    print('tag:', child.tag, 'attributes:', child.attrib)
+```
+
+## 8.2.4 JSON
+
+JSON (JavaScript Object Notation) は、ウェブ開発などで広く使われているデータ形式です。Pythonの辞書やリストと非常に相性が良く、標準の `json` モジュールで簡単に変換できます。
+
+* **`dumps()`**: PythonのデータをJSON文字列にエンコードする。
+* **`loads()`**: JSON文字列をPythonのデータにデコードする。
+
+```python
+import json
+
+menu = {
+    "lunch": {
+        "hours": "11-3",
+        "items": {"hamburger": "$5.00"}
+    }
+}
+
+# Pythonデータ -> JSON文字列
+menu_json = json.dumps(menu)
+print(menu_json)
+
+# JSON文字列 -> Pythonデータ
+menu2 = json.loads(menu_json)
+print(menu2)
+```
+
+<Aside type="caution" title="datetime型の処理">
+JSON標準には日付・時刻型が定義されていないため、Pythonの `datetime` オブジェクトを直接 `dumps()` しようとするとエラーになります。文字列やUnix時間（数値）に変換するか、カスタムのエンコーダクラスを作成する必要があります。
+</Aside>
+
+## 8.2.5 YAML
+
+YAMLはJSONに似ていますが、より多くのデータ型（日付や時刻など）を扱うことができます。Pythonの標準ライブラリには含まれていないため、サードパーティ製の `PyYAML` パッケージをインストールして使用します。
+
+```bash
+$ pip install pyyaml
+```
+
+```python
+import yaml
+
+with open('mcintyre.yaml', 'rt') as fin:
+    text = fin.read()
+
+# YAML文字列 -> Pythonデータ
+# 注意: 信頼できないYAMLを読み込む場合は safe_load() を使用する
+data = yaml.load(text)
+print(data['details'])
+```
+
+## 8.2.7 設定ファイル (`configparser`)
+
+プログラムの設定（オプションやパスなど）を保存する場合、独自の形式を作るのではなく、標準の `configparser` モジュールを使ってWindowsの `.ini` スタイルのファイルを扱うのが便利です。
+
+```ini
+# settings.cfg の例
+[french]
+greeting = Bonjour
+
+[files]
+home = /usr/local
+bin = %(home)s/bin
+```
+
+```python
+import configparser
+
+cfg = configparser.ConfigParser()
+cfg.read('settings.cfg')
+
+print(cfg['french']['greeting']) # Bonjour
+print(cfg['files']['bin']) # /usr/local/bin (変数が展開される)
+```
+
+## 8.2.9 `pickle` によるシリアライズ
+
+`pickle` モジュールは、あらゆるPythonオブジェクト（自作クラスのインスタンスや `datetime` などを含む）を専用のバイナリ形式で保存・復元（シリアライズ）できるPython特有の仕組みです。
+
+```python
+import pickle
+import datetime
+
+now = datetime.datetime.utcnow()
+
+# Pythonオブジェクト -> pickleバイナリ
+pickled = pickle.dumps(now)
+
+# pickleバイナリ -> Pythonオブジェクト
+now2 = pickle.loads(pickled)
+print(now2)
+```
+
+<Aside type="danger" title="セキュリティに関する警告">
+XML、YAML、そして特に `pickle` は、悪意のあるデータを与えられるとシステムのセキュリティ問題（任意のコード実行やメモリ枯渇など）を引き起こす危険性があります。**信頼できない提供元からのデータをデシリアライズ（ロード）してはいけません**。
+</Aside>

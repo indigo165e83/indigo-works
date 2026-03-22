@@ -1,0 +1,151 @@
+---
+title: "8.4 リレーショナルデータベース"
+description: "Pythonでのリレーショナルデータベースの操作方法。標準のSQLiteから、強力なSQLAlchemy（エンジンレイヤ、表現言語、ORM）の使い方についての要約"
+sidebar:
+  order: 48
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+リレーショナルデータベースは、データの同時アクセスや保護、効率的な検索などを可能にする、コンピューティングの世界で広く普及している技術です。Pythonからデータベースを操作する方法について見ていきましょう。
+
+## 8.4.1 - 8.4.2 SQLとDB-API
+
+リレーショナルデータベースを操作するための普遍的な言語が **SQL (Structured Query Language)** です。データの作成(Create)、読み出し(Read)、更新(Update)、削除(Delete)を行う「CRUD」操作が基本となります。
+
+Pythonには、これらのデータベースにアクセスするための標準APIである **DB-API** が用意されています。`connect()` で接続し、`cursor()` でカーソルを作り、`execute()` でSQLを実行し、`fetchall()` などで結果を取得するという共通のインターフェースを持っています。
+
+## 8.4.3 SQLiteを使った基本操作
+
+SQLiteは、Pythonの標準ライブラリとして組み込まれている軽量なデータベースです。ファイルとして保存されるため、設定不要ですぐに使えます。
+
+動物園（zoo）の動物を管理するテーブルを作り、データを追加・検索してみましょう。
+
+```python
+import sqlite3
+
+# データベースに接続（ファイルがない場合は作成される）
+conn = sqlite3.connect('enterprise.db')
+curs = conn.cursor()
+
+# テーブルの作成
+curs.execute('''CREATE TABLE zoo (
+    critter VARCHAR(20) PRIMARY KEY,
+    count INT,
+    damages FLOAT)''')
+
+# プレースホルダー（?）を使って安全にデータを挿入
+ins = 'INSERT INTO zoo (critter, count, damages) VALUES(?, ?, ?)'
+curs.execute(ins, ('duck', 5, 0.0))
+curs.execute(ins, ('bear', 2, 1000.0))
+curs.execute(ins, ('weasel', 1, 2000.0))
+
+# データの取得（個体数の降順でソート）
+curs.execute('SELECT * FROM zoo ORDER BY count DESC')
+rows = curs.fetchall()
+print(rows)
+# 出力: [('duck', 5, 0.0), ('bear', 2, 1000.0), ('weasel', 1, 2000.0)]
+
+# 使い終わったら閉じる
+curs.close()
+conn.close()
+```
+
+## 8.4.6 SQLAlchemy
+
+様々なデータベース（MySQL、PostgreSQL、SQLiteなど）の違いを吸収し、よりPythonらしく操作できるようにする強力なサードパーティ製ライブラリが **SQLAlchemy** です。
+
+```bash
+$ pip install sqlalchemy
+```
+
+SQLAlchemyは、低水準から高水準まで3つのレベルでデータベースを操作できます。
+
+### 1. エンジンレイヤ（低水準）
+DB-APIに最も近く、SQL文を直接実行します。
+
+```python
+import sqlalchemy as sa
+
+# メモリ上にSQLiteデータベースを作成
+conn = sa.create_engine('sqlite://')
+
+conn.execute('''CREATE TABLE zoo (
+    critter VARCHAR(20) PRIMARY KEY,
+    count INT,
+    damages FLOAT)''')
+
+# データの挿入
+ins = 'INSERT INTO zoo (critter, count, damages) VALUES (?, ?, ?)'
+conn.execute(ins, 'duck', 10, 0.0)
+
+# データの取得（ResultProxyが返るのでループで回す）
+rows = conn.execute('SELECT * FROM zoo')
+for row in rows:
+    print(row) # ('duck', 10, 0.0)
+```
+
+### 2. SQL表現言語（中水準）
+SQL文を直接書くのではなく、Pythonの関数を使ってSQLを組み立てます。
+
+```python
+import sqlalchemy as sa
+
+conn = sa.create_engine('sqlite://')
+meta = sa.MetaData()
+
+# Pythonのオブジェクトとしてテーブルを定義
+zoo = sa.Table('zoo', meta,
+    sa.Column('critter', sa.String, primary_key=True),
+    sa.Column('count', sa.Integer),
+    sa.Column('damages', sa.Float)
+)
+meta.create_all(conn)
+
+# 表現言語を使って挿入と検索
+conn.execute(zoo.insert().values(critter='bear', count=2, damages=1000.0))
+result = conn.execute(zoo.select())
+print(result.fetchall())
+```
+
+### 3. ORM (オブジェクト関係マッピング)（高水準）
+データベースのテーブルをPythonの「クラス」として、行を「オブジェクト（インスタンス）」として扱います。SQLを意識せずに操作できるのが特徴です。
+
+```python
+import sqlalchemy as sa
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+
+conn = sa.create_engine('sqlite:///zoo.db')
+Base = declarative_base()
+
+# テーブルとクラスを対応付ける
+class Zoo(Base):
+    __tablename__ = 'zoo'
+    critter = sa.Column('critter', sa.String, primary_key=True)
+    count = sa.Column('count', sa.Integer)
+    damages = sa.Column('damages', sa.Float)
+
+    def __init__(self, critter, count, damages):
+        self.critter = critter
+        self.count = count
+        self.damages = damages
+
+# データベース上にテーブルを作成
+Base.metadata.create_all(conn)
+
+# セッションを作成
+Session = sessionmaker(bind=conn)
+session = Session()
+
+# Pythonオブジェクトを作ってデータベースに追加
+first = Zoo('duck', 10, 0.0)
+session.add(first)
+
+# 変更を確定して保存
+session.commit()
+```
+
+<Aside type="tip" title="どのレベルを使うべきか？">
+単純な用途なら標準の `sqlite3` やエンジンレイヤで十分です。複雑な処理をPythonのコードベースに馴染ませたい場合はORMが便利ですが、複雑なSQLを隠蔽してしまう「抽象の穴」には注意が必要です。
+</Aside>

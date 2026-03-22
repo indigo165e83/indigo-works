@@ -1,0 +1,130 @@
+---
+title: "8.5 NoSQL データストア"
+description: "SQLをサポートしないデータベース（NoSQL）の紹介。dbm、memcached、および豊富なデータ構造を持つRedisのPythonからの操作方法についての要約"
+sidebar:
+  order: 49
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+一部のデータベースはリレーショナルではなく、SQLをサポートしていません。これらは、非常に大きなデータセットの処理や柔軟なデータ定義を目的としており、**NoSQL (Not Only SQL)** と総称されています。
+
+## 8.5.1 dbmファミリ
+
+dbmはNoSQLという言葉が生まれる前から存在する、シンプルなキーバリューストア（キーと値の組）です。Pythonの辞書とよく似た操作感で、ディスク上のファイルに直接データを保存できます。
+
+```python
+import dbm
+
+# 'c'モードは読み書き両用で、ファイルがなければ作成する
+db = dbm.open('definitions', 'c')
+
+# 辞書のようにキーに値を代入して保存
+db['mustard'] = 'yellow'
+db['ketchup'] = 'red'
+
+# データの取得（バイト列として返される）
+print(db['mustard']) # b'yellow'
+
+db.close()
+```
+
+## 8.5.2 memcached
+
+memcachedは、キーと値のための高速な「インメモリ」のキャッシュサーバーです。データは永続的ではなく、メモリが不足すると古いデータから消去されていきます。
+
+Pythonから操作するには、`python-memcached` などのサードパーティ製ドライバを使用します。
+
+```python
+# pip install python-memcached が必要
+import memcache
+
+# memcachedサーバーに接続
+db = memcache.Client(['127.0.0.1:11211'])
+
+# 値の設定と取得
+db.set('marco', 'polo')
+print(db.get('marco')) # 'polo'
+
+# 数値のインクリメント
+db.set('ducks', 0)
+db.incr('ducks', 2)
+print(db.get('ducks')) # 2
+```
+
+## 8.5.3 Redis
+
+Redisは、memcachedに似ていますが、データをディスクに保存して再起動に対応できたり、単純な文字列以外の多様なデータ構造（リスト、ハッシュ、集合など）を扱えたりする強力なデータ構造サーバーです。
+
+```bash
+# redis-py ドライバのインストール
+$ pip install redis
+```
+
+```python
+import redis
+
+# Redisサーバーに接続（デフォルトで localhost:6379）
+conn = redis.Redis()
+```
+
+### 文字列と数値の操作
+```python
+conn.set('secret', 'ni!')
+print(conn.get('secret')) # b'ni!'
+
+conn.set('carats', 24)
+conn.incr('carats', 10) # 10増やす
+print(conn.get('carats')) # b'34'
+```
+
+### リスト（List）
+Redisのリストは文字列のみを格納できます。先頭（`lpush`）や末尾（`rpush`）への追加が可能です。
+
+```python
+# 先頭に要素を追加
+conn.lpush('zoo', 'bear', 'alligator', 'duck')
+
+# 全要素を取得 (0 から -1 は全体を意味する)
+print(conn.lrange('zoo', 0, -1))
+# [b'duck', b'alligator', b'bear']
+```
+
+### ハッシュ（Hash）
+Pythonの辞書に似ていますが、値は文字列のみです。1段階の深さのキー・バリューのペアを保持します。
+
+```python
+conn.hmset('song', {'do': 'a deer', 're': 'about a deer'})
+conn.hset('song', 'mi', 'a note to follow re')
+
+print(conn.hgetall('song'))
+# {b'do': b'a deer', b're': b'about a deer', b'mi': b'a note to follow re'}
+```
+
+### 集合（Set）とソート済み集合（Sorted Set / zset）
+重複のない要素の集まりを扱います。和集合や積集合などの集合演算も可能です。
+また、各要素に「スコア」を持たせて順序付けできるソート済み集合は、タイムラインやランキングに非常に便利です。
+
+```python
+import time
+
+# ソート済み集合の例：タイムスタンプをスコアとしてログイン履歴を記録
+now = time.time()
+conn.zadd('logins', {'smeagol': now})
+conn.zadd('logins', {'sauron': now + 300}) # 5分後
+
+# ログイン順に取得
+print(conn.zrange('logins', 0, -1, withscores=True))
+```
+
+### キャッシュと有効期限
+Redisの全てのキーには有効期限を設定でき、指定した時間が経過すると自動的に削除されます。
+
+```python
+conn.set('temp_key', 'hello')
+conn.expire('temp_key', 5) # 5秒後に削除されるように設定
+```
+
+<Aside type="tip" title="その他のNoSQL">
+本書では他にも、Cassandra、CouchDB、MongoDBなどのドキュメント指向/カラム指向のNoSQLデータベースや、Lucene、ElasticSearchなどのフルテキスト検索データベースとそのPython用APIについても触れられています。
+</Aside>

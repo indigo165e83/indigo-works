@@ -1,0 +1,152 @@
+---
+title: "8.1 ファイル入出力"
+description: "Pythonにおけるファイルの開き方、テキストとバイナリデータの読み書き、with文による安全なクローズ、ファイル位置の変更（seek）についての要約"
+sidebar:
+  order: 45
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+プログラムの実行が終了したり、電源が切れたりすると、メモリ（RAM）上のデータは失われてしまいます。データを永続的に残すための最も単純な方法が、ディスク上に保存される「ファイル（フラットファイル）」への読み書きです。
+
+## ファイルのオープンとモード
+
+ファイルを読み書きするには、まず `open()` 関数を使ってファイルを開く必要があります。
+
+```python
+fileobj = open(filename, mode)
+```
+
+`mode` には、ファイルの操作の種類とデータのタイプを組み合わせた文字列を指定します。
+
+* **操作の種類**
+  * `r`: 読み出し
+  * `w`: 書き込み（ファイルが存在すれば上書き）
+  * `x`: 書き込み（ファイルが存在しない場合のみ。上書き防止に便利）
+  * `a`: 追記（ファイルの末尾に書き足す）
+* **ファイルのタイプ**
+  * `t` (または省略): テキスト
+  * `b`: バイナリ
+
+ファイルの操作が終わったら、最後に `close()` で閉じる必要があります。
+
+## 8.1.1 テキストファイルへの書き込み
+
+サンプルとして、以下の詩（文字列）をファイルに書き込んでみましょう。
+
+```python
+poem = '''There was a young lady named Bright,
+Whose speed was far faster than light;
+She started one day
+In a relative way,
+And returned on the previous night.'''
+
+# 'wt' (書き込み＋テキストモード) でファイルを開く
+fout = open('relativity', 'wt')
+
+# write() 関数で書き込む（書き込んだ文字数が返る）
+fout.write(poem) # 出力: 150
+
+fout.close()
+```
+
+<Aside type="tip" title="print()を使った書き込み">
+`print(poem, file=fout)` のように、`print()` 関数の `file` 引数にファイルオブジェクトを渡して書き込むこともできます。この場合、デフォルトで末尾に改行が追加されます。
+</Aside>
+
+## 8.1.2 テキストファイルの読み出し
+
+読み出しにはいくつかの方法があります。用途やファイルのサイズに合わせて使い分けます。
+
+### `read()`: 全体を一度に読む
+最も簡単ですが、巨大なファイルの場合はメモリを大量に消費するため注意が必要です。
+
+```python
+fin = open('relativity', 'rt')
+poem = fin.read()
+fin.close()
+```
+
+### イテレータによる読み出し（推奨）
+テキストファイルを1行ずつ処理する場合、最も簡単でメモリ効率が良いのはイテレータ（`for` ループ）を使った方法です。
+
+```python
+poem = ''
+fin = open('relativity', 'rt')
+
+# 1行ずつ自動的に読み出される
+for line in fin:
+    poem += line
+
+fin.close()
+```
+
+### `readlines()`: 行のリストとして読む
+一度にすべての行を読み出し、1行ごとの文字列を要素とするリストを返します。
+
+```python
+fin = open('relativity', 'rt')
+lines = fin.readlines()
+fin.close()
+
+print(len(lines), 'lines read') # 5 lines read
+```
+
+## 8.1.3 & 8.1.4 バイナリファイルの読み書き
+
+バイナリデータを扱う場合は、モードに `'b'` を追加します。
+
+```python
+# 0から255までのバイナリデータを作成
+bdata = bytes(range(0, 256))
+
+# バイナリモードで書き込み ('wb')
+fout = open('bfile', 'wb')
+fout.write(bdata)
+fout.close()
+
+# バイナリモードで読み出し ('rb')
+fin = open('bfile', 'rb')
+bdata_read = fin.read()
+fin.close()
+```
+
+## 8.1.5 `with`文によるファイルの自動クローズ
+
+`open()` で開いたファイルは必ず `close()` する必要がありますが、閉じ忘れを防ぐために Python では **`with` 文（コンテキストマネージャ）** が用意されています。
+
+```python
+# with文のブロックを抜けると、自動的にファイルが閉じられる
+with open('relativity', 'wt') as fout:
+    fout.write(poem)
+```
+
+<Aside type="note" title="with文のメリット">
+処理が正常に終わったときはもちろん、途中でエラー（例外）が発生して処理が中断された場合でも、Pythonが自動的かつ安全にファイルを閉じてくれます。
+</Aside>
+
+## 8.1.6 `seek()` による位置の変更
+
+ファイルの特定の場所にジャンプして読み書きしたい場合は、`seek()` と `tell()` を使います。
+
+* **`tell()`**: ファイルの先頭からの現在の位置（オフセット）をバイト単位で返します。
+* **`seek(offset, origin)`**: 指定した位置にジャンプします。
+
+`origin`（基準位置）には以下の値を指定します。
+* `0` (デフォルト): ファイルの先頭から
+* `1`: 現在の位置から
+* `2`: ファイルの末尾から
+
+```python
+fin = open('bfile', 'rb')
+
+# ファイルの末尾の1バイト手前にジャンプ
+fin.seek(255, 0) # 先頭から255バイト目に移動
+# もしくは fin.seek(-1, 2) でも同じ
+
+# 最後の1バイトを読み出す
+bdata = fin.read()
+print(bdata[0]) # 255
+
+fin.close()
+```
