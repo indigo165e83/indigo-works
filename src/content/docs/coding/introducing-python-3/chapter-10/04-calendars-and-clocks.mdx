@@ -1,0 +1,161 @@
+---
+title: "10.4 カレンダーとクロック"
+description: "Pythonにおける日付と時刻の扱い。datetimeモジュール、timeモジュール、および日時の文字列フォーマット（strftime/strptime）についての要約"
+sidebar:
+  order: 57
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+プログラミングにおいて、日付と時刻の処理は驚くほど厄介です。うるう年の計算や、地域ごとの標準時の違い、そしてサマータイム（Daylight Saving Time）など、多くの複雑な要素が絡み合っているからです。
+Pythonの標準ライブラリには、これらの問題を処理するための複数のモジュール（`datetime`、`time`、`calendar` など）が用意されています。
+
+## 10.4.1 `datetime` モジュール
+
+`datetime` モジュールは、日付や時刻を扱うための4つのメインオブジェクトを提供しています。
+
+### 1. `date` オブジェクト（年月日）
+年、月、日を指定して作成します。
+
+```python
+from datetime import date
+
+# 2014年のハロウィン
+halloween = date(2014, 10, 31)
+print(halloween.day)   # 31
+print(halloween.month) # 10
+print(halloween.year)  # 2014
+
+# ISO 8601形式（YYYY-MM-DD）の文字列で出力
+print(halloween.isoformat()) # '2014-10-31'
+
+# 今日の日付を取得
+now = date.today()
+print(now) # 出力例: datetime.date(2014, 2, 2)
+```
+
+### 2. `timedelta` オブジェクト（日時の間隔）
+日付の足し算や引き算を行うために使います。
+
+```python
+from datetime import timedelta
+
+one_day = timedelta(days=1)
+
+# 今日の日付に1日を足して明日を計算
+tomorrow = now + one_day
+print(tomorrow) # datetime.date(2014, 2, 3)
+
+# 17日後を計算
+print(now + 17 * one_day) # datetime.date(2014, 2, 19)
+```
+
+### 3. `time` オブジェクト（時分秒とマイクロ秒）
+1日のなかの特定の時刻を表現します。
+
+```python
+from datetime import time
+
+# 正午（12時0分0秒）
+noon = time(12, 0, 0)
+print(noon.hour)   # 12
+print(noon.minute) # 0
+```
+
+### 4. `datetime` オブジェクト（日付と時刻の両方）
+日付と時刻の両方を保持します。`date` と `time` を結合して作ることもできます。
+
+```python
+from datetime import datetime
+
+# 現在の日付と時刻を取得
+now_dt = datetime.now()
+print(now_dt) 
+# 出力例: datetime.datetime(2014, 2, 2, 23, 15, 34, 694988)
+
+# dateとtimeを結合する
+noon_today = datetime.combine(now, noon)
+print(noon_today) # datetime.datetime(2014, 2, 2, 12, 0)
+
+# datetimeからdateやtimeを抽出する
+print(noon_today.date()) # datetime.date(2014, 2, 2)
+print(noon_today.time()) # datetime.time(12, 0)
+```
+
+## 10.4.2 `time` モジュール
+
+`datetime` モジュール内の `time` オブジェクトとは別に、標準ライブラリには `time` というモジュールも存在します。これは主に**Unix時間**（1970年1月1日午前0時からの経過秒数、エポックタイム）を扱うために使われます。
+
+```python
+import time
+
+# 現在のUnix時間（秒数）を取得
+now_unix = time.time()
+print(now_unix) # 出力例: 1391488263.664645
+
+# Unix時間を文字列に変換
+print(time.ctime(now_unix)) # 'Mon Feb  3 22:31:03 2014'
+```
+
+### `struct_time` オブジェクト
+Unix時間を、年月日時分秒に分かれた `struct_time` オブジェクトに変換できます。
+
+```python
+# システムのローカルタイムに変換
+tm_local = time.localtime(now_unix)
+print(tm_local)
+
+# UTC（協定世界時）に変換
+tm_utc = time.gmtime(now_unix)
+
+# struct_time を Unix時間に戻す
+print(time.mktime(tm_local))
+```
+
+<Aside type="tip" title="ベストプラクティス">
+可能であれば、地域の標準時やサマータイムの影響を受けない**UTC（協定世界時）**をシステム内部の時刻として扱うべきです。サマータイムはデータの重複や消失など多くのトラブルの原因になります。
+</Aside>
+
+## 10.4.3 日時の読み書き（文字列フォーマット）
+
+日時オブジェクトと文字列を相互に変換するには、書式指定子（`%Y`, `%m`, `%d`, `%H`, `%M`, `%S` など）を使います。
+
+* **`strftime()`**: 日時オブジェクト $\rightarrow$ 文字列
+* **`strptime()`**: 文字列 $\rightarrow$ 日時オブジェクト
+
+```python
+import time
+
+# 書式指定文字列の定義
+fmt = "It's %A %B %d, %Y, local time %I:%M:%S%p"
+t = time.localtime()
+
+# struct_time を文字列に変換
+print(time.strftime(fmt, t))
+# 出力例: "It's Tuesday, February 04, 2014, local time 07:28:38PM"
+
+# 文字列を struct_time に変換（書式が完全に一致している必要があります）
+fmt_short = "%Y-%m-%d"
+parsed_time = time.strptime("2012-01-29", fmt_short)
+print(parsed_time.tm_year, parsed_time.tm_mon, parsed_time.tm_mday) # 2012 1 29
+```
+
+### ロケールの変更
+`locale` モジュールを使うと、システム設定に依存する月名や曜日名（`%A`, `%B` など）を他言語（フランス語やドイツ語など）に変更できます。
+
+```python
+import locale
+from datetime import date
+
+halloween = date(2014, 10, 31)
+
+# フランス語のロケールを設定して出力
+locale.setlocale(locale.LC_TIME, 'fr_fr')
+print(halloween.strftime('%A, %B %d'))
+# 出力: 'Vendredi, octobre 31'
+```
+
+## 10.4.4 代替モジュール
+
+標準ライブラリのモジュールが複雑に感じる場合や、より高度な機能（タイムゾーン処理や柔軟なパースなど）が必要な場合は、サードパーティ製のパッケージが便利です。
+代表的なものとして `arrow`, `dateutil`, `iso8601`, `fleming` などがあります。

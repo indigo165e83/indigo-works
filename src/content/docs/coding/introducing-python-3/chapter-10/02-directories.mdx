@@ -1,0 +1,105 @@
+---
+title: "10.2 ディレクトリ"
+description: "Pythonのosモジュールやglobモジュールを使った、ディレクトリの作成、削除、内容のリスト化、カレントディレクトリの変更などの操作についての要約"
+sidebar:
+  order: 55
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+ほとんどのオペレーティングシステムにおいて、ファイルはディレクトリ（フォルダ）の階層構造のなかにあります。標準ライブラリの `os` モジュールは、ファイルだけでなく、ディレクトリ操作のための便利な関数も多数提供しています。
+
+## 10.2.1 `mkdir()` による作成
+
+新しいディレクトリを作るには、`os.mkdir()` を使います。
+
+```python
+import os
+
+# 'poems'という名前のディレクトリを作成する
+os.mkdir('poems')
+
+# ディレクトリが作成されたか確認する
+print(os.path.exists('poems')) # True
+```
+
+## 10.2.2 `rmdir()` による削除
+
+空のディレクトリを削除するには、`os.rmdir()` を使います。
+
+```python
+import os
+
+# 先ほど作成した'poems'ディレクトリを削除する
+os.rmdir('poems')
+
+print(os.path.exists('poems')) # False
+```
+
+## 10.2.3 `listdir()` による内容リストの作成
+
+ディレクトリの中に含まれるファイルやサブディレクトリのリストを取得するには、`os.listdir()` を使います。
+
+```python
+import os
+
+# テスト用にディレクトリとファイルを作成
+os.mkdir('poems')
+os.mkdir('poems/mcintyre')
+fout = open('poems/mcintyre/the_good_man', 'w')
+fout.write('Cheerful and happy was his mood...')
+fout.close()
+
+# 'poems'ディレクトリの内容をリストアップする
+print(os.listdir('poems'))
+# 出力: ['mcintyre']
+
+# サブディレクトリの内容をリストアップする
+print(os.listdir('poems/mcintyre'))
+# 出力: ['the_good_man']
+```
+
+## 10.2.4 `chdir()` によるカレントディレクトリの変更
+
+プログラムの作業の起点となるカレントディレクトリを別のディレクトリに移動するには、`os.chdir()` を使います。
+
+```python
+import os
+
+# カレントディレクトリを 'poems' に移動する
+os.chdir('poems')
+
+# カレントディレクトリ ('.') の内容を確認する
+print(os.listdir('.'))
+# 出力: ['mcintyre']
+```
+
+## 10.2.5 `glob()` によるパターンにマッチするファイルのリスト作成
+
+複雑な正規表現を使わずに、Unixシェルの規則（ワイルドカードなど）を使ってファイルやディレクトリの名前を検索したい場合は、標準ライブラリの **`glob`** モジュールを使います。
+
+主なマッチング規則は以下の通りです：
+* `*`: すべての文字列にマッチする。
+* `?`: 任意の1文字にマッチする。
+* `[abc]`: a、b、cのいずれか1文字にマッチする。
+* `[!abc]`: a、b、c以外の文字にマッチする。
+
+```python
+import glob
+
+# 'm'で始まるすべてのファイル/ディレクトリを取得
+print(glob.glob('m*'))
+# 出力: ['mcintyre']
+
+# ちょうど2文字の名前を持つファイル/ディレクトリを取得
+print(glob.glob('??'))
+# 出力: []
+
+# 'm'で始まり、その後に任意の6文字が続き、'e'で終わる8文字の名前を取得
+print(glob.glob('m??????e'))
+# 出力: ['mcintyre']
+
+# 'k', 'l', 'm'のいずれかで始まり、'e'で終わる名前を取得
+print(glob.glob('[klm]*e'))
+# 出力: ['mcintyre']
+```

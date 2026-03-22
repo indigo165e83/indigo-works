@@ -1,0 +1,143 @@
+---
+title: "10.1 ファイル"
+description: "Pythonのosモジュールやshutilモジュールを使った、ファイルの作成、存在確認、コピー、名前変更、削除などのシステムレベルのファイル操作についての要約"
+sidebar:
+  order: 54
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Pythonは、`os`モジュール（オペレーティングシステムの略）を通じてさまざまなシステム関連の関数を提供しています。Pythonのファイル操作のやり方は、基本的にUnixの方式にならっています。
+
+この章の操作を試すための準備として、まず `open()` を使ってテスト用のファイル（`oops.txt`）を作成しておきましょう。
+
+```python
+# テスト用ファイルの作成
+fout = open('oops.txt', 'wt')
+print('Oops, I created a file.', file=fout)
+fout.close()
+```
+
+## 10.1.2 ファイルの存在チェック (`exists`)
+
+ファイルやディレクトリが実際に存在するかどうかを確かめるには、`os.path.exists()` を使います。
+
+```python
+import os
+
+print(os.path.exists('oops.txt'))   # True
+print(os.path.exists('./oops.txt')) # True
+print(os.path.exists('waffles'))    # False
+
+# ドット1個(.)はカレントディレクトリ、ドット2個(..)は親ディレクトリを表します
+print(os.path.exists('.'))  # True
+print(os.path.exists('..')) # True
+```
+
+## 10.1.3 ファイルタイプのチェック (`isfile`, `isdir`, `isabs`)
+
+指定した名前がファイルなのか、ディレクトリなのかを調べる関数です。
+
+```python
+import os
+name = 'oops.txt'
+
+# 普通のファイルかどうか
+print(os.path.isfile(name)) # True
+
+# ディレクトリかどうか
+print(os.path.isdir(name))  # False
+print(os.path.isdir('.'))   # True (カレントディレクトリなのでTrue)
+
+# 絶対パスかどうか（実際に存在しなくても判定可能です）
+print(os.path.isabs(name))             # False
+print(os.path.isabs('/big/fake/name')) # True
+```
+
+## 10.1.4 ファイルのコピーと移動 (`copy`, `move`)
+
+ファイルのコピーや移動には、`os` モジュールではなく `shutil` モジュールを使用します。
+
+```python
+import shutil
+
+# oops.txt を ohno.txt にコピーする
+shutil.copy('oops.txt', 'ohno.txt')
+
+# shutil.move() を使えば、コピーした後にオリジナルを削除（つまり移動）します
+```
+
+## 10.1.5 ファイル名の変更 (`rename`)
+
+ファイル名を変更するには、`os.rename()` を使います。
+
+```python
+import os
+
+# ohno.txt を ohwell.txt に変更する
+os.rename('ohno.txt', 'ohwell.txt')
+```
+
+## 10.1.6 リンクの作成 (`link`, `symlink`)
+
+Unix系システムでは、ファイルに対して複数の名前（リンク）を持たせることができます。
+
+* **ハードリンク**: `os.link()` で作成します。
+* **シンボリックリンク**: `os.symlink()` で作成し、`os.path.islink()` でリンクかどうかを判定します。
+
+```python
+import os
+
+# ハードリンクの作成
+os.link('oops.txt', 'yikes.txt')
+print(os.path.isfile('yikes.txt')) # True
+
+# シンボリックリンクの作成
+os.symlink('oops.txt', 'jeepers.txt')
+print(os.path.islink('jeepers.txt')) # True
+```
+
+## 10.1.7 & 10.1.8 権限とオーナーの変更 (`chmod`, `chown`)
+
+* **パーミッションの変更**: `os.chmod()` を使います。8進数の値か、`stat` モジュールの定数を指定します。
+* **オーナーの変更**: `os.chown()` を使ってユーザーIDとグループIDを指定します（Unix/Linux/Mac専用）。
+
+```python
+import os
+import stat
+
+# oops.txt をオーナーの読み出しのみ(00400)に設定する
+os.chmod('oops.txt', 0o400)
+
+# statモジュールの定数を使うことも可能
+os.chmod('oops.txt', stat.S_IRUSR)
+
+# オーナーの変更 (uid=5, gid=22 の例)
+# os.chown('oops.txt', 5, 22)
+```
+
+## 10.1.9 & 10.1.10 パス名の取得 (`abspath`, `realpath`)
+
+* **絶対パスの取得**: `os.path.abspath()` を使うと、相対名を絶対パスに展開します。
+* **リンク元の取得**: `os.path.realpath()` を使うと、シンボリックリンクからオリジナルのファイル名を取得できます。
+
+```python
+import os
+
+print(os.path.abspath('oops.txt'))
+# 出力例: '/usr/gaberlunzie/oops.txt'
+
+print(os.path.realpath('jeepers.txt'))
+# 出力例: '/usr/gaberlunzie/oops.txt'
+```
+
+## 10.1.11 ファイルの削除 (`remove`)
+
+不要になったファイルを削除するには `os.remove()` を使います。
+
+```python
+import os
+
+os.remove('oops.txt')
+print(os.path.exists('oops.txt')) # False
+```

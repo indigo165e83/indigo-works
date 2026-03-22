@@ -1,0 +1,143 @@
+---
+title: "10.3 プログラムとプロセス"
+description: "Pythonからプロセス情報（PIDなど）を取得する方法や、subprocessモジュールを使った外部プログラムの実行、multiprocessingモジュールを使ったプロセスの並列実行についての要約"
+sidebar:
+  order: 56
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+個別のプログラムを実行すると、オペレーティングシステム（OS）は「プロセス」をひとつ作ります。OSは実行されているすべてのプロセスを管理しており、プロセスは他のプロセスから切り離されて独立して動作します。
+
+Pythonの標準ライブラリ `os` モジュールを使うと、実行中のPythonプログラム自身のプロセス情報にアクセスできます。
+
+```python
+import os
+
+# プロセスID (PID) の取得
+print(os.getpid())
+
+# カレントディレクトリの取得
+print(os.getcwd())
+
+# ユーザーID (UID) とグループID (GID) の取得 (Unix系)
+print(os.getuid())
+print(os.getgid())
+```
+
+## 10.3.1 `subprocess` によるプロセスの作成
+
+標準ライブラリの `subprocess` モジュールを使うと、Pythonプログラムの中から他の既存のプログラム（シェルコマンドなど）を起動し、その結果を受け取ることができます。
+
+用途に合わせて、いくつかの関数が用意されています。
+
+### 出力を文字列として取得する (`getoutput`)
+プログラムを実行して、その標準出力（および標準エラー出力）を文字列として受け取ります。
+
+```python
+import subprocess
+
+# Unixのdateコマンドを実行して出力を受け取る
+ret = subprocess.getoutput('date')
+print(ret)
+# 出力例: 'Sun Mar 30 22:54:37 CDT 2014'
+
+# パイプを使ったコマンドも実行可能です
+ret = subprocess.getoutput('date -u | wc')
+```
+
+### 出力をバイト列として取得する (`check_output`)
+シェルを介さずにコマンドと引数のリストを受け取り、標準出力だけを `bytes` 形式で返します。
+
+```python
+ret = subprocess.check_output(['date', '-u'])
+print(ret)
+# 出力例: b'Mon Mar 31 04:01:50 UTC 2014\n'
+```
+
+### 終了ステータスと出力を両方取得する (`getstatusoutput`)
+```python
+ret = subprocess.getstatusoutput('date')
+print(ret)
+# 出力例: (0, 'Sat Jan 18 21:36:23 CST 2014')
+```
+
+### 終了ステータスだけを取得する (`call`)
+出力は不要で、コマンドが成功したかどうか（ステータスコード）だけを知りたい場合に使います。Unix系システムでは、通常 `0` が成功を表します。
+
+```python
+# 1. シェルを介して実行する方法（1つの文字列）
+ret = subprocess.call('date -u', shell=True)
+
+# 2. シェルを介さずに実行する方法（引数のリスト。推奨）
+ret = subprocess.call(['date', '-u'])
+print(ret) # 0
+```
+
+## 10.3.2 `multiprocessing` によるプロセスの作成
+
+`multiprocessing` モジュールを使うと、外部プログラムではなく、**Pythonの関数を別々の独立したプロセスとして複数同時に実行**させることができます。
+
+以下は、独立したプロセスを4つ作成して実行する例です。
+
+```python
+import multiprocessing
+import os
+
+def do_this(what):
+    whoami(what)
+
+def whoami(what):
+    # 現在のプロセスID(PID)とともにメッセージを表示
+    print("Process %s says: %s" % (os.getpid(), what))
+
+if __name__ == "__main__":
+    whoami("I'm the main program")
+
+    # 4つの新しいプロセスを作成して開始する
+    for n in range(4):
+        p = multiprocessing.Process(
+            target=do_this, 
+            args=("I'm function %s" % n,)
+        )
+        p.start()
+```
+
+このコードを実行すると、メインプログラムとは別に4つのプロセスが起動し、それぞれ異なるプロセスIDでメッセージを表示します。
+
+## 10.3.3 `terminate()` によるプロセスの強制終了
+
+起動したプロセスが不要になったり、無限ループに陥ったりした場合は、`terminate()` メソッドを使ってメインプロセスから強制終了させることができます。
+
+```python
+import multiprocessing
+import time
+import os
+
+def whoami(name):
+    print("I'm %s, in process %s" % (name, os.getpid()))
+
+def loopy(name):
+    whoami(name)
+    start = 1
+    stop = 1000000
+    # 1秒に1回メッセージを表示して100万まで数えようとする
+    for num in range(start, stop):
+        print("\tNumber %s of %s. Honk!" % (num, stop))
+        time.sleep(1)
+
+if __name__ == "__main__":
+    whoami("main")
+    
+    # 別プロセスで loopy 関数を実行
+    p = multiprocessing.Process(target=loopy, args=("loopy",))
+    p.start()
+    
+    # メインプロセスは5秒間待つ
+    time.sleep(5)
+    
+    # 5秒後に子プロセスを強制終了する
+    p.terminate()
+```
+
+このプログラムを実行すると、`loopy` プロセスは5回カウントしたところでメインプロセスによって強制的に打ち切られます。
