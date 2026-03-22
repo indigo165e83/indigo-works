@@ -1,0 +1,166 @@
+---
+title: "11.2 ネットワーク"
+description: "Pythonによるネットワークプログラミング。パブサブモデル、低水準のソケット通信、ZeroMQ、Web APIの利用、そしてRPCによるリモート処理についての要約"
+sidebar:
+  order: 59
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+この章では、空間的に広がった分散コンピューティングである「ネットワーキング」について取り上げます。ネットワークアプリケーションは、主に「要求/応答（クライアント/サーバー）」、「プッシュ/プル」、「パブリッシュ/サブスクライブ（パブサブ）」などの基本パターンから作られます。
+
+## 11.2.2 パブリッシュ/サブスクライブモデル
+
+パブサブモデルは、キューではなくブロードキャスト（放送）に似たパターンです。パブリッシャ（発行者）がデータを送り出し、サブスクライバ（購読者）は自分が受け取りたい特定のタイプ（トピック）のデータだけを受信します。
+
+Redisを使うと、手っ取り早くパブサブシステムを作ることができます。
+
+**パブリッシャ側のコード例**
+```python
+import redis
+import random
+
+conn = redis.Redis()
+cats = ['siamese', 'persian', 'maine coon', 'norwegian forest']
+hats = ['stovepipe', 'bowler', 'tam-o-shanter', 'fedora']
+
+for msg in range(10):
+    cat = random.choice(cats)
+    hat = random.choice(hats)
+    print('Publish: %s wears a %s' % (cat, hat))
+    # トピック(猫種)とメッセージ(帽子)をパブリッシュする
+    conn.publish(cat, hat)
+```
+
+**サブスクライバ側のコード例**
+```python
+import redis
+
+conn = redis.Redis()
+topics = ['maine coon', 'persian'] # 購読したいトピック
+sub = conn.pubsub()
+sub.subscribe(topics)
+
+# メッセージの受信待ちループ
+for msg in sub.listen():
+    if msg['type'] == 'message':
+        cat = msg['channel']
+        hat = msg['data']
+        print('Subscribe: %s wears a %s' % (cat, hat))
+```
+
+## 11.2.3 & 11.2.4 TCP/IP と ソケット
+
+インターネットのプロトコルには、主に以下の2種類があります。
+* **UDP**: 短いメッセージ（データグラム）を単発で送るためのプロトコル。到達の保証はありませんが高速です。
+* **TCP**: 寿命の長い接続に使われ、バイトのストリームを送り、順番通りに確実に届くことを保証します。
+
+これらを直接操作するための最下層の仕組みが「ソケット」です。標準ライブラリの `socket` モジュールを使います。
+
+**単純なUDPサーバーの例**
+```python
+import socket
+
+server_address = ('localhost', 6789)
+max_size = 4096
+
+# インターネット(IP)ソケットでUDP(DGRAM)を指定
+server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+server.bind(server_address)
+
+# クライアントからのデータ受信待ち
+data, client = server.recvfrom(max_size)
+print('Client said:', data)
+
+# 応答を返す
+server.sendto(b'Are you talking to me?', client)
+server.close()
+```
+
+## 11.2.5 ZeroMQ
+
+ソケットレベルのコーディングは面倒な部分が多く（メッセージの再構築や再試行など）、それを解決してくれるのが **ZeroMQ** です。「強化版ソケット」とも呼ばれ、様々なネットワークパターン（REQ/REP, PUB/SUBなど）のレゴブロックを提供してくれます。
+
+```bash
+# インストール
+$ pip install pyzmq
+```
+
+**ZeroMQによる同期要求/応答 (REQ/REP) サーバーの例**
+```python
+import zmq
+
+host = '127.0.0.1'
+port = 6789
+context = zmq.Context()
+
+# REP (応答) ソケットの作成
+server = context.socket(zmq.REP)
+server.bind("tcp://%s:%s" % (host, port))
+
+while True:
+    request_bytes = server.recv()
+    request_str = request_bytes.decode('utf-8')
+    print("Received: %s" % request_str)
+    
+    reply_str = "Stop saying: %s" % request_str
+    server.send(reply_str.encode('utf-8'))
+```
+
+<Aside type="note" title="ZeroMQの柔軟性">
+ZeroMQでは、ソケットの作成時に `tcp://` ではなく `ipc://` (同一マシン内のプロセス間) や `inproc://` (同一プロセス内のスレッド間) を指定するだけで、ネットワークのスケールを簡単に変更できます。
+</Aside>
+
+## 11.2.8 ウェブサービスとAPI
+
+プログラムからデータを取得する場合、HTMLをスクレイピングするよりも、JSONなどで提供される **Web API** を利用する方がはるかに安定しており簡単です。
+
+**`requests` を使ったAPIアクセスの例**
+```python
+import requests
+
+url = "[https://raw.githubusercontent.com/koki0702/introducing-python/master/dummy_api/youTube_top_rated.json](https://raw.githubusercontent.com/koki0702/introducing-python/master/dummy_api/youTube_top_rated.json)"
+response = requests.get(url)
+
+# JSONデータをPythonの辞書/リストに変換
+data = response.json()
+
+# データをループしてタイトルを表示
+for video in data['feed']['entry'][0:6]:
+    print(video['title']['$t'])
+```
+
+## 11.2.9 リモート処理 (RPC)
+
+RPC（Remote Procedure Call）を使うと、ネットワーク越しのリモートマシンにある関数を、まるでローカルの関数のように呼び出すことができます。
+標準ライブラリの `xmlrpc` を使った例を見てみましょう。
+
+**XML-RPCサーバーの例**
+```python
+from xmlrpc.server import SimpleXMLRPCServer
+
+def double(num):
+    return num * 2
+
+server = SimpleXMLRPCServer(("localhost", 6789))
+# double関数を外部から呼び出せるように登録
+server.register_function(double, "double")
+server.serve_forever()
+```
+
+**XML-RPCクライアントの例**
+```python
+import xmlrpc.client
+
+# リモートサーバーに接続
+proxy = xmlrpc.client.ServerProxy("http://localhost:6789/")
+
+# リモートの関数をローカル関数のように呼び出す
+result = proxy.double(7)
+print("Double 7 is %s" % result) # Double 7 is 14
+```
+
+## 11.2.10 & 11.2.11 ビッグデータとクラウド処理
+
+* **ビッグデータとMapReduce**: 1台のマシンに収まらない巨大なデータを処理するため、GoogleのMapReduceや、オープンソースの **Hadoop**、そしてより高速な **Spark** などが使われています。これらはPython用のAPIも備えています。
+* **クラウドでの処理**: 自前でサーバーを管理する代わりに、**Google Cloud Platform**, **Amazon Web Services (AWS)**, **OpenStack** などのクラウドサービスを利用して分散システムを構築することが一般的になっています。
