@@ -2,7 +2,8 @@
 
 個人サイト「Indigo Works」のソースコードです。Astro + Starlight で構築しています。
 
-**サイト:** https://www.indigo165e83.com
+🌐 **https://www.indigo165e83.com**
+
 
 ## 概要
 
