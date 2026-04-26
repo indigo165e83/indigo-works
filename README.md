@@ -4,6 +4,7 @@
 
 🌐 **https://www.indigo165e83.com**
 
+[![Playwright Tests](https://github.com/indigo165e83/indigo-works/actions/workflows/playwright.yml/badge.svg)](https://github.com/indigo165e83/indigo-works/actions/workflows/playwright.yml)
 
 ## 概要
 
