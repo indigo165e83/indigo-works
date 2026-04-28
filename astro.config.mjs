@@ -72,6 +72,10 @@ export default defineConfig({
               link: '/jstqb/core/advanced-ta/',
             },
             {
+              label: 'Core-Advanced Level テストアナリスト (AL-TA) 例題・演習（v3.1）',
+              link: '/jstqb/core/advanced-ta/exercises/',
+            },
+            {
               label: 'Core-Advanced Level テストマネージャ (AL-TM) シラバス 要約',
               link: '/jstqb/core/advanced-tm/',
             },
