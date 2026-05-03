@@ -13,12 +13,12 @@ test.describe('TOPページ', () => {
     await expect(page.getByText('Indigo Works').first()).toBeVisible();
   });
 
-  test('「START」ボタンが表示されていること', async ({ page }) => {
-    await expect(page.getByRole('link', { name: 'START' })).toBeVisible();
+  test('「About Me」ボタンが表示されていること', async ({ page }) => {
+    await expect(page.getByRole('link', { name: 'About Me' })).toBeVisible();
   });
 
-  test('「START」ボタンをクリックすると /about に遷移すること', async ({ page }) => {
-    await page.getByRole('link', { name: 'START' }).click();
+  test('「About Me」ボタンをクリックすると /about に遷移すること', async ({ page }) => {
+    await page.getByRole('link', { name: 'About Me' }).click();
     await expect(page).toHaveURL(/\/about/);
   });
 
