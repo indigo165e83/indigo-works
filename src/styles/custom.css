@@ -22,6 +22,12 @@ h1, h2, h3 {
   height: auto !important;
   object-fit: contain;
 }
+/* ヒーローグリッドの列比率を調整して画像を中央寄りにする */
+@media (min-width: 50rem) {
+  .hero {
+    grid-template-columns: 3fr 4fr !important;
+  }
+}
 /* 1. ヒーローエリアのDonateボタンをピンクにする */
 a.donate-button-hero {
   background-color: #ec4899 !important; /* ピンク色 */

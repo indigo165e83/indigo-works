@@ -22,80 +22,60 @@ hero:
 
 ---
 
-import { Card, CardGrid } from '@astrojs/starlight/components';
-import { Image, NotebookPen, Hammer, CircleUserRound, ShieldCheck } from 'lucide-react';
+import { Image, NotebookPen, Hammer, Briefcase, ShieldCheck } from 'lucide-react';
 
-## Highlights
+## Activities
 
-<CardGrid stagger>
-  {/* Free Images */}
-  <Card>
-    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
-      <div style="color: #0ea5e9;;">
-        <Image size={28} />
-      </div>
-      <span style="font-size: 1.5rem; font-weight: bold;">Free Images</span>
-    </div>
-    **AI画像素材ストックサービス**<br />
-    商用利用も可能なAI生成画像を無料で提供するWebサービス。<br />
-    プロンプトも公開中。<br />
-    <a href="https://free-images.indigo165e83.com/ja" target="_blank" rel="noopener noreferrer">サイトを見る</a>
-  </Card>
-  
-  {/* Tech Blog */}
-  <Card>
-    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
-      <div style="color: #f59e0b;">
-        <NotebookPen size={28} />
-      </div>
-      <span style="font-size: 1.5rem; font-weight: bold;">Tech Blog</span>
-    </div>
-    **開発技術ログ**<br />
-    Next.js, Astro, Vercel などのモダンウェブ技術に関する知見や、開発中のトラブルシューティングを発信。<br />
-    <a href="/blog/">ブログを読む</a>
-  </Card>  
+<div style="display: flex; flex-direction: column; gap: 2rem; margin-top: 1rem;">
 
-  {/* 4Testing */}
-  <Card>
-    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
-      <div style="color: #f43f5e;">
-        <Hammer size={28} />
-      </div>
-      <span style="font-size: 1.5rem; font-weight: bold;">4Testing</span>
+  <div style="display: flex; align-items: flex-start; gap: 1rem;">
+    <div style="color: #0ea5e9; flex-shrink: 0; padding-top: 0.2rem;"><Image size={28} /></div>
+    <div>
+      <div style="font-size: 1.2rem; font-weight: bold; margin-bottom: 0.25rem;">Free Images</div>
+      <div style="margin-bottom: 0.35rem;">AI画像素材ストックサービス。商用利用も可能なAI生成画像を無料で提供するWebサービス。プロンプトも公開中。</div>
+      <a href="https://free-images.indigo165e83.com/ja" target="_blank" rel="noopener noreferrer">サイトを見る →</a>
     </div>
-    **開発者向けユーティリティ**<br />
-    開発現場で必要となるテスト用データ生成ツールなどをまとめたユーティリティサイト。<br />
-    <a href="https://4testing.indigo165e83.com/ja" target="_blank" rel="noopener noreferrer">サイトを見る</a>
-  </Card>
-  
-  {/* 学習ノート */}
-  <Card>
-    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
-      <div style="color: #10b981;">
-        <ShieldCheck size={28} />
-      </div>
-      <span style="font-size: 1.5rem; font-weight: bold;">学習ノート</span>
-    </div>
-    **書籍・資格の学習記録**<br />
-    技術書や資格試験の学習ノートをまとめています。<br />
-    <ul style="margin: 0.5rem 0 0; padding-left: 1.25rem;">
-      <li><a href="/jstqb/overview/">JSTQB</a> — JSTQB資格の学習</li>
-      <li><a href="/design/essential-scrum/">Essential Scrum</a> — 書籍『エッセンシャル スクラム』の学習</li>
-      <li><a href="/coding/typescript-for-professionals/">プロを目指す人のためのTypeScript入門</a> — 書籍『プロを目指す人のためのTypeScript入門』の学習</li>
-      <li><a href="/coding/introducing-python-3/">入門 Python 3</a> — 書籍『入門 Python 3』の学習</li>
-    </ul>
-  </Card>
+  </div>
 
-  {/* About */}
-  <Card>
-    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
-      <div style="color: #8b5cf6;">
-        <CircleUserRound size={28} />
-      </div>
-      <span style="font-size: 1.5rem; font-weight: bold;">About</span>
+  <div style="display: flex; align-items: flex-start; gap: 1rem;">
+    <div style="color: #f43f5e; flex-shrink: 0; padding-top: 0.2rem;"><Hammer size={28} /></div>
+    <div>
+      <div style="font-size: 1.2rem; font-weight: bold; margin-bottom: 0.25rem;">4Testing</div>
+      <div style="margin-bottom: 0.35rem;">開発者向けユーティリティ。開発現場で必要となるテスト用データ生成ツールなどをまとめたユーティリティサイト。</div>
+      <a href="https://4testing.indigo165e83.com/ja" target="_blank" rel="noopener noreferrer">サイトを見る →</a>
     </div>
-    **プロフィール**<br />
-    名古屋在住のフリーランスエンジニア。経歴、スキルセット、使用デバイス、お仕事のご依頼など。<br />
-    <a href="/about/">詳細を見る</a>
-  </Card>
-</CardGrid>
+  </div>
+
+  <div style="display: flex; align-items: flex-start; gap: 1rem;">
+    <div style="color: #10b981; flex-shrink: 0; padding-top: 0.2rem;"><ShieldCheck size={28} /></div>
+    <div>
+      <div style="font-size: 1.2rem; font-weight: bold; margin-bottom: 0.25rem;">学習ノート</div>
+      <div style="margin-bottom: 0.35rem;">書籍・資格の学習記録。技術書や資格試験の学習ノートをまとめています。</div>
+      <ul style="margin: 0.25rem 0 0; padding-left: 1.25rem;">
+        <li><a href="/jstqb/overview/">JSTQB</a> — JSTQB資格の学習</li>
+        <li><a href="/design/essential-scrum/">Essential Scrum</a> — 書籍『エッセンシャル スクラム』の学習</li>
+        <li><a href="/coding/typescript-for-professionals/">プロを目指す人のためのTypeScript入門</a> — 書籍『プロを目指す人のためのTypeScript入門』の学習</li>
+        <li><a href="/coding/introducing-python-3/">入門 Python 3</a> — 書籍『入門 Python 3』の学習</li>
+      </ul>
+    </div>
+  </div>
+
+  <div style="display: flex; align-items: flex-start; gap: 1rem;">
+    <div style="color: #f59e0b; flex-shrink: 0; padding-top: 0.2rem;"><NotebookPen size={28} /></div>
+    <div>
+      <div style="font-size: 1.2rem; font-weight: bold; margin-bottom: 0.25rem;">Tech Blog</div>
+      <div style="margin-bottom: 0.35rem;">開発技術ログ。Next.js, Astro, Vercel などのモダンウェブ技術に関する知見や、開発中のトラブルシューティングを発信。</div>
+      <a href="/blog/">ブログを読む →</a>
+    </div>
+  </div>
+
+  <div style="display: flex; align-items: flex-start; gap: 1rem;">
+    <div style="color: #8b5cf6; flex-shrink: 0; padding-top: 0.2rem;"><Briefcase size={28} /></div>
+    <div>
+      <div style="font-size: 1.2rem; font-weight: bold; margin-bottom: 0.25rem;">My Works</div>
+      <div style="margin-bottom: 0.35rem;">制作物の紹介。これまでに手がけたプロジェクトや作品をまとめています。</div>
+      <a href="/works/">詳細を見る →</a>
+    </div>
+  </div>
+
+</div>
