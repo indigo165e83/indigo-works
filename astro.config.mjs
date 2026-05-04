@@ -45,18 +45,6 @@ export default defineConfig({
           link: '/works/',
         },
         {
-          label: 'Essential Scrum',
-          link: '/design/essential-scrum/',
-        },
-        {
-          label: 'TypeScript for Professionals',
-          link: '/coding/typescript-for-professionals/',
-        },
-        {
-          label: 'Introducing Python 3',
-          link: '/coding/introducing-python-3/',
-        },
-        {
           label: 'JSTQB',
           items: [
             {
@@ -92,6 +80,27 @@ export default defineConfig({
               link: '/jstqb/specialist/foundation-ctai/',
             },
           ],
+        },
+        {
+          label: 'Playwright',
+          items: [
+            {
+              label: 'Overview',
+              link: '/test/playwright/overview/',
+            },
+          ]
+        },
+        {
+          label: 'Essential Scrum',
+          link: '/design/essential-scrum/',
+        },
+        {
+          label: 'TypeScript for Professionals',
+          link: '/coding/typescript-for-professionals/',
+        },
+        {
+          label: 'Introducing Python 3',
+          link: '/coding/introducing-python-3/',
         },
         {
           label: 'Tech Blog',
