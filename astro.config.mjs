@@ -88,6 +88,10 @@ export default defineConfig({
               label: 'Overview',
               link: '/test/playwright/overview/',
             },
+            {
+              label: 'Table of Contents',
+              link: '/test/playwright/table-of-contents/',
+            },
           ]
         },
         {

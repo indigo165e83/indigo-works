@@ -1,0 +1,54 @@
+---
+title: Playwright 学習ノート
+description: モダンなWebアプリケーション向けE2Eテストフレームワーク「Playwright」の基本概念と特徴について解説します。
+---
+
+## 目次
+Playwrightの公式ドキュメントは非常に充実していますが、情報量が多いため、最初からすべてを読もうとすると圧倒されてしまうかもしれません。
+
+スキルを最短で身につけるために、「絶対に読むべきコアな概念」と、「高度な設計のために読むべきガイド」に分けて、優先順位の高いページをピックアップしました。
+
+### Phase 1: 基礎と「壊れにくいテスト」の書き方
+まずは、Playwrightならではの「安定性」の理由を知るためのセクションです。Seleniumなど他のツールとの違いが明確になります。
+
+#### <a href="https://playwright.dev/docs/locators" target="_blank" rel="noopener noreferrer">Locators</a>
+
+画面上の要素（ボタンやテキスト）をどう取得するかは、テストの保守性に直結します。Playwrightが推奨する「ユーザーが画面を見るのと同じように要素を探す方法（getByRole や getByText など）」を理解できます。XPathやCSSセレクタへの依存を減らすための最重要ページです。
+
+#### <a href="https://playwright.dev/docs/test-assertions" target="_blank" rel="noopener noreferrer">Assertions</a>
+
+「要素が表示されているか」「正しいURLか」などを検証（Assert）する方法です。Playwrightの expect は、条件を満たすまで自動でリトライしてくれる「Web-First Assertions」という強力な機能を持っています。
+
+#### <a href="https://playwright.dev/docs/actionability" target="_blank" rel="noopener noreferrer">Auto-waiting</a>
+
+Playwright最大の強みである「要素がクリック可能になるまで自動で待機する」仕組みが解説されています。これを読めば、不安定なテスト（Flaky test）をなくすコツが掴めます。
+
+### Phase 2: 設計力を高める（アーキテクチャ）
+E2Eテストのファイル数が増えても破綻しない、スケーラブルな自動化環境を作るための設計パターンです。
+
+#### <a href="https://playwright.dev/docs/pom" target="_blank" rel="noopener noreferrer">Page Object Model</a>
+
+クラスを使って画面の要素と操作をカプセル化する、Playwrightにおけるベストな書き方がコード例とともに載っています。
+
+#### <a href="https://playwright.dev/docs/test-fixtures" target="_blank" rel="noopener noreferrer">Fixtures</a>
+
+これはSETとして必ずマスターしたい超重要機能です。各テストの実行前に「ブラウザを立ち上げる」「ログイン状態を作る」「DBにテストデータを入れる」といった準備（セットアップとティアダウン）を、美しくモジュール化する仕組みです。
+
+#### <a href="https://playwright.dev/docs/best-practices" target="_blank" rel="noopener noreferrer">Best Practices</a>
+
+「テストは独立させるべし」「ロケーターの選び方」など、Playwright開発チームが推奨するベストプラクティスがまとまっています。クライアントにレビューされる際も、ここにある基準を守っていれば高く評価されます。
+
+### Phase 3: 実践的な高度機能（プロジェクトに合わせて）
+多言語対応や複雑なツールを持つWebアプリのテストを実装する際に、すぐに役立つセクションです。
+
+#### <a href="https://playwright.dev/docs/emulation" target="_blank" rel="noopener noreferrer">Emulation</a>
+
+ブラウザの言語設定（ロケール）やタイムゾーン、カラーモード（ダーク/ライト）、モバイル端末の画面サイズなどをエミュレート（擬似再現）する方法が書かれています。i18n（多言語対応）のルーティングテストを書く際に必須になります。
+
+#### <a href="https://playwright.dev/docs/network" target="_blank" rel="noopener noreferrer">Network</a>
+
+APIのレスポンスをモック（偽装）する方法や、ネットワークリクエストを監視する方法です。フロントエンドの動きだけを純粋にテストしたい場合に非常に強力です。
+
+#### <a href="https://playwright.dev/docs/ci" target="_blank" rel="noopener noreferrer">Continuous Integration (GitHub Actions)</a>
+
+CI/CDへの組み込み方です。このページを参考に、GitHub Actionsのワークフローに、Playwrightの実行ジョブを追加し、テスト結果（HTMLレポートやトレース）を保存する方法を確認できます。
