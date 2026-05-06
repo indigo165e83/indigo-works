@@ -1,11 +1,84 @@
 ---
-title: 制作プロジェクト
-description: indigoの制作実績一覧
+title: Works & Projects
+description: indigoの業務実績と個人開発の一覧。QA/テスト自動化エンジニアとしての業務案件から、個人開発のWebサービスまで。
 ---
 
-## My Works
+import { Image, NotebookPen, Hammer, Briefcase, ShieldCheck, PenLine, KeyRound, LayoutDashboard } from 'lucide-react';
 
-### 🖼️ <a href="https://free-images.indigo165e83.com/ja" target="_blank" rel="noopener noreferrer">Free Images</a>
+## QA / テスト実績（業務参画案件）
+
+### <Briefcase size={28} style={{color: '#8b5cf6', display: 'inline-block', verticalAlign: 'middle', marginRight: '0.4rem'}} /> ニュースコンテンツ配信プラットフォームの品質保証・運用
+
+**担当フェーズ**: APIテスト / 不具合解析 / ソースコード修正 / テスト設計・実施 / CI/CD運用
+
+**担当業務**:
+
+- **Python製DAGの運用・バグ修正**  
+  Apache Airflow（Cloud Composer）上の月次収益計算パイプラインを担当。バリデーションエラー発生時にソースコードレベルで原因を特定し、Pythonコードのバグ修正を実施
+- **BigQuery / SQL によるデータ品質検証**  
+  日米間の収益按分・手数料など複雑な計算ロジックの妥当性を、SQLで期待値を算出して実システム出力と突合
+- **CI/CD パイプライン運用・リリース管理**  
+  GitHub Actions を用いたテスト実行パイプラインを運用し、Dev / Prod 環境へのデプロイをリリース前テストから本番反映まで一貫して管理
+- **生成AI（LLM）出力の品質評価プロセス設計**  
+  GPT-4o / Gemini を用いたスライドショー自動生成機能のQAプロセスを構築。評価基準の策定、不具合傾向の分析、開発チームへのフィードバックサイクルを確立
+- **障害対応・DB レベルのデータリカバリ**  
+  GCP Datastore のレコード修正・再計算ジョブの再実行など、システム内部に踏み込んだ障害対応を実施
+- **グローバルチームとの仕様調整**  
+  PM・日米ビジネスチーム・海外エンジニア（ベトナム / インド）と英語・日本語で連携し、仕様書・運用マニュアルを継続的に整備
+
+**使用技術**: Python / SQL / GCP（BigQuery / Cloud Storage / Datastore / Cloud Composer）/ Apache Airflow / GitHub Actions / OpenAI GPT-4o / Google Gemini
+
+---
+
+### <Briefcase size={28} style={{color: '#8b5cf6', display: 'inline-block', verticalAlign: 'middle', marginRight: '0.4rem'}} /> ママ友マッチング/地域コミュニティアプリ開発・QA
+
+**担当フェーズ**: バックエンド開発 / APIテスト / テスト設計・実施 / 不具合解析
+
+**担当業務**:
+
+- TypeScriptによるバックエンドAPI開発
+- Postman を使ったAPIテストの設計・実施
+- テスト用DBデータ作成、iPhone / Android アプリの結合テスト
+- 不具合原因解析（ログ解析）、海外開発チームとの英語コミュニケーション
+
+**使用技術**: TypeScript / JavaScript / MySQL / Postman / Swagger / Charles / AWS / Jira / Confluence
+
+---
+
+### <Briefcase size={28} style={{color: '#8b5cf6', display: 'inline-block', verticalAlign: 'middle', marginRight: '0.4rem'}} /> モバイル / Web アプリ QA（複数案件）
+
+**担当フェーズ**: テスト設計 / テスト実施 / APIテスト
+
+| 案件 | 主な担当 |
+|---|---|
+| トラックドライバー向け地図・日報点検管理アプリ | iPhone / Android 結合テスト、管理Web画面テスト |
+| 健康フィットネスアプリ / API | APIテスト設計・実施（Postman / Charles）、モバイルアプリ検証 |
+| 婚活マッチングアプリ / Web管理画面 | iPhone / Android / Web 検証 |
+
+**使用技術**: Postman / Charles / iOS / Android / Jira / Notion / Figma / Backlog
+
+---
+
+## 個人開発（Projects）
+
+### <Hammer size={28} style={{color: '#f43f5e', display: 'inline-block', verticalAlign: 'middle', marginRight: '0.4rem'}} /> [4Testing](https://4testing.indigo165e83.com/ja)
+
+QAエンジニアとして現場で感じた課題から生まれたユーティリティ。  
+テスト用データ生成・バリデーション確認など、テスト作業を効率化するツールを自作・公開。
+
+**GitHub**: [indigo165e83/4testing](https://github.com/indigo165e83/4testing)
+
+* **使用技術**
+  - **Framework**: Next.js 16 (App Router)
+  - **Language**: TypeScript
+  - **Styling**: Tailwind CSS
+  - **Database**: PostgreSQL (Prisma) / Prisma
+  - **Auth**: NextAuth.js (v5)
+  - **Infrastructure**: Vercel
+
+---
+
+### <Image size={28} style={{color: '#0ea5e9', display: 'inline-block', verticalAlign: 'middle', marginRight: '0.4rem'}} /> [Free Images](https://free-images.indigo165e83.com/ja)
 
 AIで生成した画像をストックし、フリーで提供するWebサイトです。
 
@@ -13,7 +86,7 @@ AIで生成した画像をストックし、フリーで提供するWebサイト
 
 **GitHub**: [indigo165e83/free-images](https://github.com/indigo165e83/free-images)
 
-* **Tech Stack**
+* **使用技術**
   - **Framework**: Next.js 16 (App Router)
   - **Language**: TypeScript
   - **Styling**: Tailwind CSS
@@ -22,47 +95,33 @@ AIで生成した画像をストックし、フリーで提供するWebサイト
   - **Storage**: AWS S3
   - **Auth**: NextAuth.js (v5)
   - **Infrastructure**: Vercel
+
 ---
 
-### 🛠️ <a href="https://4testing.indigo165e83.com/ja" target="_blank" rel="noopener noreferrer">4Testing</a>
-
-開発現場で必要となるテスト用データ生成やツール群をまとめたユーティリティサイトです。
-
-**GitHub**: [indigo165e83/4testing](https://github.com/indigo165e83/4testing)
-
-* **Tech Stack**
-  - **Framework**: Next.js 16 (App Router)
-  - **Language**: TypeScript
-  - **Styling**: Tailwind CSS
-  - **Database**: PostgreSQL (Prisma) / Prisma
-  - **Auth**: NextAuth.js (v5)
-  - **Infrastructure**: Vercel
----
-
-### 🖊️ <a href="https://whiteboard.indigo165e83.com/" target="_blank" rel="noopener noreferrer">Whiteboard</a>
+### <PenLine size={28} style={{color: '#f59e0b', display: 'inline-block', verticalAlign: 'middle', marginRight: '0.4rem'}} /> [Whiteboard](https://whiteboard.indigo165e83.com/)
 
 手書き風にダイアグラムや図を自由に描けるホワイトボードアプリです。
 
 **GitHub**: [indigo165e83/whiteboard](https://github.com/indigo165e83/whiteboard)
 
-* **Tech Stack**
+* **使用技術**
   - **Framework**: Next.js (App Router)
   - **Language**: TypeScript
   - **Styling**: Tailwind CSS
   - **Infrastructure**: Vercel
 ---
 
-### 🔐 <a href="https://next-auth-example.indigo165e83.com" target="_blank" rel="noopener noreferrer">NextAuth.js Example</a>
+### <KeyRound size={28} style={{color: '#f97316', display: 'inline-block', verticalAlign: 'middle', marginRight: '0.4rem'}} /> [NextAuth.js Example](https://next-auth-example.indigo165e83.com)
 **認証機能の実装実験・デモ**
 
 NextAuth.jsを用いた認証フロー（ログイン、セッション管理など）の挙動を確認できるデモサイトです。
 
 **GitHub**: [indigo165e83/next-auth-example](https://github.com/indigo165e83/next-auth-example)
 
-* **Tech Stack**: Next.js, Vercel, Auth.js
+* **使用技術**: Next.js, Vercel, Auth.js
 ---
 
-### 📊 <a href="https://nextjs-dashboard.indigo165e83.com/" target="_blank" rel="noopener noreferrer">Next.js Dashboard</a>
+### <LayoutDashboard size={28} style={{color: '#06b6d4', display: 'inline-block', verticalAlign: 'middle', marginRight: '0.4rem'}} /> [Next.js Dashboard](https://nextjs-dashboard.indigo165e83.com/)
 **財務管理ダッシュボード（Next.js公式チュートリアル拡張）**
 
 Next.js公式サイトの学習コースをベースに構築した、フルスタックな財務ダッシュボードアプリケーションです。

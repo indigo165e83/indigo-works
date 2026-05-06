@@ -41,7 +41,7 @@ export default defineConfig({
           link: '/about/',
         },
         {
-          label: 'My Works',
+          label: 'Works & Projects',
           link: '/works/',
         },
         {
