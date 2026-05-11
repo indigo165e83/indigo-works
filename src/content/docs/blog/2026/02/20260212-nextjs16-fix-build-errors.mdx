@@ -52,7 +52,7 @@ React 19 から、`form action` に渡す関数は戻り値が `void` または 
 ### 解決策：force-dynamic の活用
 Next.js 16 の `cacheComponents (Partial Prerendering)` を有効にしていると、ビルド時に DB を叩きに行こうとします。今回はビルドを確実に成功させるため、一旦 `app/layout.tsx` に以下の設定を投入しました。
 
-```typeScript
+```typescript
 export const dynamic = 'force-dynamic';
 ```
 これにより、「ビルド時に静的にページを作る」のをやめ、「リクエスト時に動的に生成する」挙動に強制変更。ビルド時のネットワーク起因によるエラーを完全に回避できました。
