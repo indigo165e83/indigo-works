@@ -56,8 +56,8 @@ export default defineConfig({
               link: '/jstqb/core/foundation/',
             },
             {
-              label: 'Core-Advanced Level テストアナリスト (AL-TA) シラバス 要約',
-              link: '/jstqb/core/advanced-ta/',
+              label: 'Core-Advanced Level テストアナリスト (AL-TA) シラバス 要約（v3.1）',
+              link: '/jstqb/core/advanced-ta/v3-1/',
             },
             {
               label: 'Core-Advanced Level テストアナリスト (AL-TA) 過去問（v3.1）',
