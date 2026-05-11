@@ -72,16 +72,16 @@ export default defineConfig({
               link: '/jstqb/core/advanced-ta/exercises-v4-0/',
             },
             {
+              label: 'Core-Advanced Level テスト自動化エンジニア(TAE) シラバス 要約（v1.0）',
+              link: '/jstqb/core/advanced-tae/v1-0/',
+            },
+            {
               label: 'Core-Advanced Level テストマネージャ (AL-TM) シラバス 要約',
               link: '/jstqb/core/advanced-tm/',
             },
             {
               label: 'Agile-Foundation Level シラバス 要約',
               link: '/jstqb/agile/foundation/',
-            },
-            {
-              label: 'Specialist-Advanced Level テスト自動化エンジニア(TAE) シラバス 要約',
-              link: '/jstqb/specialist/advanced-tae/',
             },
             {
               label: 'Specialist-Foundation Level AIテスティング(CT-AI) シラバス 要約',
