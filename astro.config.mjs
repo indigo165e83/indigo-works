@@ -119,6 +119,10 @@ export default defineConfig({
           link: '/coding/python-practice-recipes-2022/',
         },
         {
+          label: 'Python実践レシピ(2026年版)',
+          link: '/coding/python-practice-recipes-2026/',
+        },
+        {
           label: 'Tech Blog',
           link: '/blog/',
         },

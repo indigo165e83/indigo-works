@@ -1,29 +1,46 @@
 ---
-title: 『Python実践レシピ』(2022年版)目次
-description: "Python 3 エンジニア認定実践試験の認定テキスト「Python実践レシピ」(2022年版)（技術評論社）の目次とまとめ"
+title: 『Python実践レシピ』(2026年版)目次
+description: "Python 3 エンジニア認定実践試験の認定テキスト「改訂新版 Python実践レシピ」(2026年版)（技術評論社）の目次とまとめ"
 sidebar:
   order: 1
 ---
 
-鈴木たかのり 他 (著) <a href="https://amzn.to/4wHCfR0" target="_blank" rel="noopener noreferrer">Python実践レシピ(2022年版)</a>（技術評論社）の目次とまとめです。  
+鈴木たかのり 他 (著) Pythonエンジニア育成推進協会 (監修) <a href="https://amzn.to/4eNnhCl" target="_blank" rel="noopener noreferrer">改訂新版 Python実践レシピ(2026年版)</a>（技術評論社）の目次とまとめです。  
 本書は **Python 3 エンジニア認定実践試験** の認定テキストであり、標準ライブラリを中心に実務で役立つレシピ形式で解説しています。  
 Python に関する知識を体系的に整理し、学習の進捗管理や特定のトピックを素早く参照するためのインデックスです。
+
+## 2022年版からの主な変更点
+
+| 変更種別 | 章 | 内容 |
+|---|---|---|
+| 追加 | Chapter 1 | 1.3 パッケージマネージャーの導入 — uv |
+| 変更 | Chapter 2 | 2.2 静的コード解析ツール: Flake8 → Ruff（リンター・フォーマッターを統合） |
+| 削除 | Chapter 2 | 2.3 ソースコードの自動整形 — Black（Ruff に統合） |
+| 追加 | Chapter 3 | 3.3 構造的パターンマッチ（match 文） |
+| 追加 | Chapter 5 | 5.3 一歩進んだ型ヒントの活用 |
+| 追加 | Chapter 6 | 6.3 テンプレート文字列リテラル — t-string |
+| 追加 | Chapter 10 | 10.5 コマンドラインツール — click |
+| 変更 | Chapter 13 | 13.3 INIファイル（configparser）→ TOMLファイル（tomllib） |
+| 追加 | Chapter 14 | 14.4 非同期に対応したHTTPクライアント — HTTPX |
+| 削除 | Chapter 14 | 14.5 電子メールのデータを処理する — email |
+| 削除 | Chapter 16 | 16.5 ドキュメント生成とオンラインヘルプシステム — pydoc |
 
 ## Chapter 1 Pythonの環境
 1.1 Pythonパッケージを管理する — pip  
 1.2 仮想環境を作成する — venv  
+1.3 パッケージマネージャーの導入 — uv  
 ## Chapter 2 コーディング規約
 2.1 Python標準のスタイルガイド — PEP 8  
-2.2 静的コード解析ツール — Flake8  
-2.3 ソースコードの自動整形 — Black  
+2.2 静的コード解析ツール — Ruff  
 ## Chapter 3 Pythonの言語仕様
 3.1 例外処理  
 3.2 with文  
-3.3 関数の引数  
-3.4 アンパック  
-3.5 内包表記、ジェネレーター式  
-3.6 ジェネレーター — generator  
-3.7 デコレーター  
+3.3 構造的パターンマッチ  
+3.4 関数の引数  
+3.5 アンパック  
+3.6 内包表記、ジェネレーター式  
+3.7 ジェネレーター — generator  
+3.8 デコレーター  
 ## Chapter 4 Pythonのクラス
 4.1 class構文  
 4.2 属性とメソッド  
@@ -33,15 +50,17 @@ Python に関する知識を体系的に整理し、学習の進捗管理や特�
 ## Chapter 5 型ヒント
 5.1 型ヒント  
 5.2 静的型チェックを行う — mypy  
+5.3 一歩進んだ型ヒントの活用  
 ## Chapter 6 テキストの処理
 6.1 一般的な文字列操作を行う — str, string  
 6.2 フォーマットと文字列リテラル — f-string  
-6.3 正規表現を扱う — re  
-6.4 Unicodeデータベースへアクセスする — unicodedata  
+6.3 テンプレート文字列リテラル — t-string  
+6.4 正規表現を扱う — re  
+6.5 Unicodeデータベースへアクセスする — unicodedata  
 ## Chapter 7 数値の処理
 7.1 基本的な数値計算を行う — 組み込み関数、math  
 7.2 十進数で計算を行う — decimal  
-7.3 擬似乱数を扱う — random  
+7.3 疑似乱数を扱う — random  
 7.4 統計計算を行う — statistics  
 ## Chapter 8 日付と時刻の処理
 8.1 日付や時刻を扱う — datetime  
@@ -50,7 +69,7 @@ Python に関する知識を体系的に整理し、学習の進捗管理や特�
 8.4 datetimeの強力な拡張モジュール — dateutil  
 ## Chapter 9 データ型とアルゴリズム
 9.1 ソート — sorted, sort, operator  
-9.2 さまざまなコンテナー型を扱う — collections  
+9.2 さまざまなコンテナデータ型を扱う — collections  
 9.3 二分法アルゴリズムを利用する — bisect  
 9.4 列挙型による定数の定義を行う — enum  
 9.5 データを読みやすい形式で出力する — pprint  
@@ -61,6 +80,7 @@ Python に関する知識を体系的に整理し、学習の進捗管理や特�
 10.2 ストリームを扱う — io  
 10.3 インタープリターに関わる情報を取得、操作する — sys  
 10.4 コマンドラインオプション、引数を扱う — argparse  
+10.5 コマンドラインツール — click  
 ## Chapter 11 ファイルとディレクトリへのアクセス
 11.1 ファイルパス操作を直観的に行う — pathlib  
 11.2 一時的なファイルやディレクトリを生成する — tempfile  
@@ -73,7 +93,7 @@ Python に関する知識を体系的に整理し、学習の進捗管理や特�
 ## Chapter 13 特定のデータフォーマットを扱う
 13.1 CSVファイルを扱う — csv  
 13.2 JSONを扱う — json  
-13.3 INIファイルを扱う — configparser  
+13.3 TOMLファイルを扱う — tomllib  
 13.4 YAMLを扱う — PyYAML  
 13.5 Excelを扱う — openpyxl  
 13.6 画像を扱う — Pillow  
@@ -81,8 +101,8 @@ Python に関する知識を体系的に整理し、学習の進捗管理や特�
 14.1 URLをパースする — urllib.parse  
 14.2 URLを開く — urllib.request  
 14.3 ヒューマンフレンドリーなHTTPクライアント — Requests  
-14.4 Base16、Base64などへエンコードする — base64  
-14.5 電子メールのデータを処理する — email  
+14.4 非同期に対応したHTTPクライアント — HTTPX  
+14.5 Base16、Base64などへエンコードする — base64  
 ## Chapter 15 HTML/XMLを扱う
 15.1 XMLをパースする — ElementTree  
 15.2 XML/HTMLを高速かつ柔軟にパースする — lxml  
@@ -92,16 +112,15 @@ Python に関する知識を体系的に整理し、学習の進捗管理や特�
 16.2 ユニットテストフレームワークを利用する — unittest  
 16.3 モックを利用してユニットテストを行う — unittest.mock  
 16.4 高度なユニットテスト機能を利用する — pytest  
-16.5 ドキュメント生成とオンラインヘルプシステム — pydoc  
 ## Chapter 17 デバッグ
-17.1 対話的なデバッグを行う — pdb、breakpoint  
+17.1 対話的なデバッグを行う — pdb, breakpoint  
 17.2 コードの実行時間を計測する — timeit  
 17.3 スタックトレースを扱う — traceback  
 17.4 ログを出力する — logging  
 ## Chapter 18 暗号関連
 18.1 安全な乱数を生成する — secrets  
 18.2 ハッシュ値を生成する — hashlib  
-18.3 暗号化ライブラリー — cryptography  
+18.3 暗号化ライブラリ — cryptography  
 ## Chapter 19 並行処理、並列処理
 19.1 イベントループでの非同期処理 — asyncio  
 19.2 マルチプロセス、マルチスレッドをシンプルに行う — concurrent.futures  
