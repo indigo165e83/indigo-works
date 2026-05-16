@@ -56,28 +56,28 @@ export default defineConfig({
               link: '/jstqb/core/foundation/',
             },
             {
-              label: 'Core-Advanced Level テストアナリスト (AL-TA) シラバス 要約（v3.1）',
-              link: '/jstqb/core/advanced-ta/v3-1/',
-            },
-            {
               label: 'Core-Advanced Level テストアナリスト (AL-TA) シラバス 要約（v4.0）',
               link: '/jstqb/core/advanced-ta/v4-0/',
             },
             {
-              label: 'Core-Advanced Level テストアナリスト (AL-TA) 過去問（v3.1）',
-              link: '/jstqb/core/advanced-ta/exercises-v3-1/',
+              label: 'Core-Advanced Level テストアナリスト (AL-TA) シラバス 要約（v3.1）',
+              link: '/jstqb/core/advanced-ta/v3-1/',
             },
             {
               label: 'Core-Advanced Level テストアナリスト (AL-TA) 過去問（v4.0）',
               link: '/jstqb/core/advanced-ta/exercises-v4-0/',
             },
             {
-              label: 'Core-Advanced Level テスト自動化エンジニア(TAE) シラバス 要約（v1.0）',
-              link: '/jstqb/core/advanced-tae/v1-0/',
+              label: 'Core-Advanced Level テストアナリスト (AL-TA) 過去問（v3.1）',
+              link: '/jstqb/core/advanced-ta/exercises-v3-1/',
             },
             {
               label: 'Core-Advanced Level テスト自動化エンジニア(TAE) シラバス 要約（v2.0）',
               link: '/jstqb/core/advanced-tae/v2-0/',
+            },
+            {
+              label: 'Core-Advanced Level テスト自動化エンジニア(TAE) シラバス 要約（v1.0）',
+              link: '/jstqb/core/advanced-tae/v1-0/',
             },
             {
               label: 'Core-Advanced Level テストマネージャ (AL-TM) シラバス 要約',
@@ -119,12 +119,12 @@ export default defineConfig({
           link: '/coding/introducing-python-3/',
         },
         {
-          label: 'Python実践レシピ(2022年版)',
-          link: '/coding/python-practice-recipes-2022/',
-        },
-        {
           label: 'Python実践レシピ(2026年版)',
           link: '/coding/python-practice-recipes-2026/',
+        },
+        {
+          label: 'Python実践レシピ(2022年版)',
+          link: '/coding/python-practice-recipes-2022/',
         },
         {
           label: 'Tech Blog',
