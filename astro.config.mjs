@@ -107,6 +107,15 @@ export default defineConfig({
           ]
         },
         {
+          label: 'Git',
+          items: [
+            {
+              label: 'Gitコマンドのチートシート',
+              link: '/design/git/git-cheatsheet/',
+            },
+          ],
+        },
+        {
           label: 'Essential Scrum',
           link: '/design/essential-scrum/',
         },
@@ -115,16 +124,16 @@ export default defineConfig({
           link: '/coding/typescript-for-professionals/',
         },
         {
-          label: 'Introducing Python 3',
-          link: '/coding/introducing-python-3/',
-        },
-        {
           label: 'Python実践レシピ(2026年版)',
           link: '/coding/python-practice-recipes-2026/',
         },
         {
           label: 'Python実践レシピ(2022年版)',
           link: '/coding/python-practice-recipes-2022/',
+        },
+        {
+          label: 'Introducing Python 3',
+          link: '/coding/introducing-python-3/',
         },
         {
           label: 'Tech Blog',
