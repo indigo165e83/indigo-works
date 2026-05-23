@@ -72,6 +72,10 @@ export default defineConfig({
               link: '/jstqb/core/advanced-ta/exercises-v3-1/',
             },
             {
+              label: 'Core-Advanced Level テクニカルテストアナリスト (AL-TTA) シラバス 要約（v4.0）',
+              link: '/jstqb/core/advanced-tta/v4-0/',
+            },
+            {
               label: 'Core-Advanced Level テスト自動化エンジニア(TAE) シラバス 要約（v2.0）',
               link: '/jstqb/core/advanced-tae/v2-0/',
             },
